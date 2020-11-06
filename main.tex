@@ -53,11 +53,11 @@ Setting this to zero we get the normal equations:
 \end{equation}
 
 \newpage
-\section{Statistical decision theory}
+\section{Statistical decision theory} \label{linear_fit}
 
 On page 19 we have that
 
-\begin{equation}
+\begin{equation} \label{eq:2_beta}
     \beta = [E(XX^T)]^{-1}E(XY)
 \end{equation}
 
@@ -340,7 +340,143 @@ putting these all together, we have:
 
 and this is the formula that was to be explained.
 
-\subsection{equation (2.27) on page 26}
+
+\subsection{equation (2.47) on page 37}
+
+\begin{equation}
+  \begin{split}
+    \text{EPE}_k(x_0) = \text{E}\left((Y - \hat{f}_k(x_0))^2 | X=x_0\right)\\
+    = \text{E}\left((f(x_0) + \epsilon_0 - \hat{f}_k(x_0))^2\right)
+  \end{split}
+\end{equation}
+
+The data points are fixed: {$x_1, x_2, \dots, x_N$}. Denote the closest data point to $x_0$ as $x_{(1)}$, the second closest $x_{(2)}$, etc. With this notation, the nearest neighbor estimate for $f(x_0)$:
+
+\begin{equation}
+    \hat{f}_k(x_0) = \frac 1k \sum_{l=1}^{k}(f(x_{(l)}) + \epsilon_l)
+\end{equation}
+
+In this equation, $f(x_{(l)})$ is fixed, and epsilons are iid random variables.
+
+\begin{equation}
+  \begin{split}
+    \text{EPE}_k(x_0) = \text{E}\left( \left(f(x_0) + \epsilon_0 - \frac 1k \sum_{l=1}^{k}(f(x_{(l)}) + \epsilon_l)\right)^2\right)\\
+    = \text{E}\left( \left[ \left( f(x_0) - \frac 1k \sum_{l=1}^{k}f(x_{(l)})\right) + \left( \epsilon_0 - \frac 1k \sum_{l=1}^{k}\epsilon_l \right) \right]^2 \right)\\
+    = \text{E} \left([\hat{F} + \hat{E}]^2\right) = \text{E} \left(\hat{F}^2 + 2\cdot \hat{F} \hat{E} + \hat{E}^2\right) = \hat{F}^2 + 2\hat{F}\cdot\text{E}(\hat{E}) + \text{E}(\hat{E}^2)
+  \end{split}
+\end{equation}
+
+where $\hat{F}$ is nonrandom, and $\hat{E}$ is random:
+
+\begin{equation}
+  \begin{split}
+    \hat{F} \equiv f(x_0) - \frac 1k \sum_{l=1}^{k}f(x_{(l)}),\\
+    \hat{E} \equiv \epsilon_0 - \frac 1k \sum_{l=1}^{k}\epsilon_l
+  \end{split}
+\end{equation}
+
+Let's calculate the expectation of $\hat{E}$:
+
+\begin{equation}
+    \text{E} (\hat{E}) = \text{E} \left( \epsilon_0 - \frac 1k \sum_{l=1}^{k}\epsilon_l \right) = \text{E} (\epsilon_0) - \frac 1k \sum_{l=1}^{k}\text{E} (\epsilon_l) = 0 - \frac 1k \sum_{l=1}^{k}0 = 0
+\end{equation}
+
+The expectation of $\hat{E}^2$:
+
+\begin{equation}
+    \text{E} (\hat{E}^2) = \text{E} \left( \epsilon_0 - \frac 1k \sum_{l=1}^{k}\epsilon_l \right)^2 = \text{E} \left( \epsilon_0^2 + \sum_{l=1}^{k}\frac{\epsilon_l^2}{k^2} + CrossProducts \right)
+\end{equation}
+
+The expectation of the cross products are zero, since epsilons are independent, so $\text{E}(\epsilon_i \epsilon_j) = \text{E} \epsilon_i \cdot \text{E} \epsilon_j = 0\cdot 0 = 0$
+
+\begin{equation}
+  \begin{split}
+    \text{E} (\hat{E}^2) = \text{E} \left( \epsilon_0^2 + \sum_{l=1}^{k}\frac{\epsilon_l^2}{k^2} \right) = \text{E} \epsilon_0^2 + \sum_{l=1}^{k}\frac{\text{E}\epsilon_l^2}{k^2}\\
+    = \sigma^2 + \sum_{l=1}^{k}\frac{\sigma^2}{k^2} = \sigma^2 + \frac{\sigma^2}{k}
+  \end{split}
+\end{equation}
+
+We used the fact that the error has zero mean, so the variance is $\sigma^2 = \text{Var}(\epsilon) = \text{E}(\epsilon^2) - (\text{E}\epsilon)^2 = \text{E}(\epsilon^2)$. So the final form is:
+
+\begin{equation}
+  \begin{split}
+    \text{E}_k(x_0) = \hat{F}^2 + 2\hat{F}\cdot\text{E}(\hat{E}) + \text{E}(\hat{E}^2) = \hat{F}^2 + \text{E}(\hat{E}^2)\\
+    = \left( f(x_0) - \frac 1k \sum_{l=1}^{k}f(x_{(l)}) \right)^2 + \sigma^2 + \frac{\sigma^2}{k}
+  \end{split}
+\end{equation}
+
+\section{Solutions for the Exercises of chapter 2}
+
+\subsection{Ex. 2.2}
+
+We have $X \in \mathbb{R}^p$ continuous and $G$ discrete random variables. Assume we have $K$ classes. Each class has its own distribution, let's say that class $g$ has a pdf $f_{g}(x)$ ($x \in \mathbb{R}^p$). When generating points, we first choose a class with associated probabilities $p_1, p_2, \dots, p_K$ ($\sum p_i = 1$). When we have chosen the class, we generate a point with the appropriate distribution.
+
+The Bayes classifier classifies each point $x$ to the most probable class. So let's calculate the probability of class $g$, given the point. It should be noted that when I write $\text{P}(x)$, I mean "the probability that the chosen point is in the infinitesimal neighborhood of $x$". So I should write $\text{P}(X \in b_{dx}(x))$, i.e., the probability that $X$ is in the $dx$-volume ball around $x$. If the pdf was $f(x)$, this probability is $f(x)dx$. But instead, I'll write $\text{P}(x) = f(x)$. Likewise, when I write $\text{P}(g)$, I mean $\text{P}(G=g)$.
+
+\begin{equation}
+    \text{P}(g|x) = \frac{\text{P}(g \cap x)}{\text{P}(x)} = \frac{\text{P}(g \cap x)}{\text{P}(x)} = \frac{\text{P}(x | g) \text{P}(g)}{\sum_{g'}\text{P}(x|g') \text{P}(g')}
+\end{equation}
+
+The denominator is a normalizing constant, so the chosen class, for which $\text{P}(g|x)$ is maximum:
+
+\begin{equation}
+    \hat{g}(x) = max_{g} \text{P} (x|g) \text{P}(g)
+\end{equation}
+
+\subsection{Ex. 2.3}
+
+Given a unit ball in $p$-dimension. We sample $N$ data points from it uniformly. Let $X$ be the distance from the origin. The pdf must be proportional to $x^{p-1}$, and integrating it from 0 to 1 gives 1, thus the pdf:
+
+\begin{equation}
+    f(x) = p\cdot x^{p-1}
+\end{equation}
+
+The probability that a random sample is at least $x$ distant from the origin is:
+
+\begin{equation}
+    \text{P}(X > x) = \int_{x}^{1} f(x)dx = 1 - x^p
+\end{equation}
+
+The probability that all $N$ sample points are further from origin as $x$:
+
+\begin{equation}
+    \text{P}(X_1 > x \cap X_2 > x \cap \dots \cap X_N > x) = \left( 1 - x^p \right)^N
+\end{equation}
+
+We seek and $x$ for that this probability is a half (that will give us the median):
+
+\begin{equation}
+  \begin{split}
+    \left( 1 - x^p \right)^N = \frac 12\\
+    1 - x^p = \left(\frac 12\right)^{1/N}\\
+    \left[1 - \left(\frac 12\right)^{1/N}\right]^{1/p} = x
+  \end{split}
+\end{equation}
+
+
+\subsection{Ex. 2.4}
+
+If we choose $a$ as the first unit base vector ($a=[1,0,0,\dots,0]^T$), then $a^T \cdot x_i$ is the first coordinate of $x_i$. It is by definition (standard) normally distributed. Since the distribution is spherically symmetric, we can choose any direction $a$, $a^T \cdot x_i$ remains standard normal.
+
+I created an experiment on this. Created 1000 sample points in $p$ dimension, and rotated them into the first 2 dimension, so that we can visualize the distances. On the first image below we can see that the points get further and further away from the origin as the dimension increases.
+
+\begin{figure}[ht]
+ \centering
+  \includegraphics[width=200pt]{images/ex2_2_origin.jpg}
+ \caption{The sample points get further from the origin as we increase the dimension.}
+\end{figure}
+
+But this doesn't mean the points are close from each other. In the following experiment I took the random sample points, chose one of them and set it as the new origin. We can see that still the points are far from a random sample point as we increase the dimension.
+
+\begin{figure}[ht]
+ \centering
+  \includegraphics[width=200pt]{images/ex_2_2_sample.jpg}
+ \caption{The points get further and further from each other (red dot is a randomly selected sample point) as we increase the dimension.}
+\end{figure}
+
+\subsection{Ex. 2.5}
+
+\subsubsection{equation (2.27) on page 26}
 
 I won't use indices at the expectation sign, it always confuses me. So this is the expected prediction error:
 
@@ -453,83 +589,108 @@ Putting it all together:
 
 And this is what we wanted to derive.
 
-\subsection{equation (2.47) on page 37}
+\subsubsection{equation (2.28) on page 26}
+
+\begin{equation}
+    \text{E} \left( x^T_0 \text{Cov}(X)^{-1}x_0 \right) = \text{E} \sum_{i,j} x_{0,i} \text{Cov}(X)^{-1}_{i,j} x_{0,j}
+\end{equation}
+
+Assuming that $x_0 \sim X$, i.e., $x_0$ (the test point) has the same distribution as $X$ (the training data), and the expectation of it is the zero vector, $\text{Cov}(x_0) = \text{Cov}(X) = \text{E} (x_0 x^T_0)$.
 
 \begin{equation}
   \begin{split}
-    \text{EPE}_k(x_0) = \text{E}\left((Y - \hat{f}_k(x_0))^2 | X=x_0\right)\\
-    = \text{E}\left((f(x_0) + \epsilon_0 - \hat{f}_k(x_0))^2\right)
+    \text{E} \sum_{i,j} x_{0,i} \text{Cov}(X)^{-1}_{i,j} x_{0,j} = \text{E} \sum_{i,j} \text{Cov}(X)^{-1}_{i,j} \text{Cov}(x_0)_{i,j}\\
+    = \text{E} \sum_{i,j} \text{Cov}(X)^{-1}_{i,j} \text{Cov}(X)_{i,j} = \text{E} \sum_{i} \left( \sum_{j} \text{Cov}(X)^{-1}_{i,j} \text{Cov}(X)_{j,i} \right)\\
+    = \text{E} \sum_{i} [\text{Cov}(X)^{-1} \text{Cov}(X)]_{i,i} = \text{E} \left( \text{Trace} (\text{Cov}(X)^{-1} \text{Cov}(X)) \right) \\
+    = \text{E} \left( \text{Trace} I_{pxp} \right) = p
   \end{split}
 \end{equation}
 
-The data points are fixed: {$x_1, x_2, \dots, x_N$}. Denote the closest data point to $x_0$ as $x_{(1)}$, the second closest $x_{(2)}$, etc. With this notation, the nearest neighbor estimate for $f(x_0)$:
 
-\begin{equation}
-    \hat{f}_k(x_0) = \frac 1k \sum_{l=1}^{k}(f(x_{(l)}) + \epsilon_l)
+\subsection{Ex. 2.6}
+
+Assume that we have $n$ identical inputs $x_1 = x_2 = \dots = x_n \equiv x$ with outputs $y_1$, $y_2$, $\dots$, $y_n$. The least squares formula:
+
+\begin{equation} \label{eq:ex2.6.1}
+    RSS(\theta) = \sum_{i=1}^{n} (y_i - f_{\theta}(x))^2
 \end{equation}
 
-In this equation, $f(x_{(l)})$ is fixed, and epsilons are iid random variables.
+The weighted least squares formula:
+
+\begin{equation} \label{eq:eq2.6.2}
+    RSS_w(\theta) = n\cdot \left(\frac{\sum_{i=1}^{n}y_i}{n} - f_{\theta}(x)\right)^2
+\end{equation}
+
+I claim that the two expressions differ by a constant term that doesn't depend on $\theta$, so both expressions lead to the same solution. This naturally extends to the case when we have groups of equal inputs.
+
+Expanding $RSS$:
+
+\begin{equation}
+    RSS(\theta) = \sum_{i=1}^{n}y_i^2 - 2 f_{\theta}(x) \sum_{i=1}^{n} y_i + f_{\theta}^2(x)
+\end{equation}
+
+Expanding $RSS_w$:
+
+\begin{equation}
+    RSS_w(\theta) = \frac{\left( \sum_{i=1}^{n} y_i \right)^2}{n} - 2 f_{\theta}(x) \sum_{i=1}^{n} y_i + f_{\theta}^2(x)
+\end{equation}
+
+So the difference of the 2 expressions is a constant that doesn't depend on $\theta$. So when we derive wrt $\theta$, we get the same formulae.
+
+Whenever we have observations with identical values $x$, we can always refactor the $RSS$ for the groups according to (\ref{eq:ex2.6.1}) $\to$ (\ref{eq:eq2.6.2}).
+
+\subsection{Ex. 2.7}
+
+Our estimator according to the problem statement:
+
+\begin{equation}
+    \hat{f}(x_0) = \sum_{i=1}^{N}l_i(x_0;\mathcal{X})y_i
+\end{equation}
+
+a) For kNN, the weights are:
+
+
+\begin{equation}
+    l_i(x_0;\mathcal{X}) = \frac{1}{k} \delta(x_i \in \text{kNN}(x_0))
+\end{equation}
+
+where $\delta(x_i \in \text{kNN}(x_0))$ is $1$ if $x_i$ is in the set of k-nearest neighbors of $x_0$, and $0$ otherwise. So in this case we average the $y$s of the k-nearest neighbors of $x_0$.
+
+For linear regression we have
+
+\begin{equation}
+    \hat{f}(x_0) = x_0^T \beta
+\end{equation}
+
+Where $\beta$ comes from  the following equation (see Section \ref{linear_fit}):
+
+\begin{equation}
+    \beta = \text{E}(XX^T)^{-1}\text{E}(XY)
+\end{equation}
+
+Now let's calculate this expression. We estimate the expectation values with averages.
+
+\begin{equation}
+    \begin{split}
+        \text{E}(XX^T)^{-1} \approx \left( \frac{1}{N}\sum_{j=1}^{N}x_j x^T_j\right)^{-1}\\
+        \text{E}(XY) \approx \frac{1}{N}\sum_{i=1}^{N}x_i y_i\\
+    \end{split}
+\end{equation}
+
+With these, we can formulate $\hat{f}(x_0)$ as follows:
 
 \begin{equation}
   \begin{split}
-    \text{EPE}_k(x_0) = \text{E}\left( \left(f(x_0) + \epsilon_0 - \frac 1k \sum_{l=1}^{k}(f(x_{(l)}) + \epsilon_l)\right)^2\right)\\
-    = \text{E}\left( \left[ \left( f(x_0) - \frac 1k \sum_{l=1}^{k}f(x_{(l)})\right) + \left( \epsilon_0 - \frac 1k \sum_{l=1}^{k}\epsilon_l \right) \right]^2 \right)\\
-    = \text{E} \left([\hat{F} + \hat{E}]^2\right) = \text{E} \left(\hat{F}^2 + 2\cdot \hat{F} \hat{E} + \hat{E}^2\right) = \hat{F}^2 + 2\hat{F}\cdot\text{E}(\hat{E}) + \text{E}(\hat{E}^2)
+    \hat{f}(x_0) = x^T_0 \left( \frac{1}{N}\sum_{j=1}^{N}x_j x^T_j\right)^{-1} \cdot \frac{1}{N}\sum_{i=1}^{N}x_i y_i\\
+    = \sum_{i=1}^{N} x^T_0 \left( \sum_{j=1}^{N} x_j x^T_j \right)^{-1} x_i y_i \\
+    \equiv \sum_{i=1}^{N} l_i(x_0;\mathcal{X}) y_i
   \end{split}
 \end{equation}
 
-where $\hat{F}$ is nonrandom, and $\hat{E}$ is random:
+From this we get the weights:
 
 \begin{equation}
-  \begin{split}
-    \hat{F} \equiv f(x_0) - \frac 1k \sum_{l=1}^{k}f(x_{(l)}),\\
-    \hat{E} \equiv \epsilon_0 - \frac 1k \sum_{l=1}^{k}\epsilon_l
-  \end{split}
+    l_i(x_0; \mathcal{X}) = x^T_0 \left( \sum_{j=1}^{N} x_j x^T_j \right)^{-1} x_i
 \end{equation}
-
-Let's calculate the expectation of $\hat{E}$:
-
-\begin{equation}
-    \text{E} (\hat{E}) = \text{E} \left( \epsilon_0 - \frac 1k \sum_{l=1}^{k}\epsilon_l \right) = \text{E} (\epsilon_0) - \frac 1k \sum_{l=1}^{k}\text{E} (\epsilon_l) = 0 - \frac 1k \sum_{l=1}^{k}0 = 0
-\end{equation}
-
-The expectation of $\hat{E}^2$:
-
-\begin{equation}
-    \text{E} (\hat{E}^2) = \text{E} \left( \epsilon_0 - \frac 1k \sum_{l=1}^{k}\epsilon_l \right)^2 = \text{E} \left( \epsilon_0^2 + \sum_{l=1}^{k}\frac{\epsilon_l^2}{k^2} + CrossProducts \right)
-\end{equation}
-
-The expectation of the cross products are zero, since epsilons are independent, so $\text{E}(\epsilon_i \epsilon_j) = \text{E} \epsilon_i \cdot \text{E} \epsilon_j = 0\cdot 0 = 0$
-
-\begin{equation}
-  \begin{split}
-    \text{E} (\hat{E}^2) = \text{E} \left( \epsilon_0^2 + \sum_{l=1}^{k}\frac{\epsilon_l^2}{k^2} \right) = \text{E} \epsilon_0^2 + \sum_{l=1}^{k}\frac{\text{E}\epsilon_l^2}{k^2}\\
-    = \sigma^2 + \sum_{l=1}^{k}\frac{\sigma^2}{k^2} = \sigma^2 + \frac{\sigma^2}{k}
-  \end{split}
-\end{equation}
-
-We used the fact that the error has zero mean, so the variance is $\sigma^2 = \text{Var}(\epsilon) = \text{E}(\epsilon^2) - (\text{E}\epsilon)^2 = \text{E}(\epsilon^2)$. So the final form is:
-
-\begin{equation}
-  \begin{split}
-    \text{E}_k(x_0) = \hat{F}^2 + 2\hat{F}\cdot\text{E}(\hat{E}) + \text{E}(\hat{E}^2) = \hat{F}^2 + \text{E}(\hat{E}^2)\\
-    = \left( f(x_0) - \frac 1k \sum_{l=1}^{k}f(x_{(l)}) \right)^2 + \sigma^2 + \frac{\sigma^2}{k}
-  \end{split}
-\end{equation}
-
-\section{Solutions for the Exercises of chapter 2}
-
-\subsection{Ex. 2.2}
-
-We have $X \in \mathbb{R}^p$ continuous and $G$ discrete random variables. Assume we have $K$ classes. Each class has its own distribution, let's say that class $g$ has a pdf $f_{g}(x)$ ($x \in \mathbb{R}^p$). When generating points, we first choose a class with associated probabilities $p_1, p_2, \dots, p_K$ ($\sum p_i = 1$). When we have chosen the class, we generate a point with the appropriate distribution.
-
-The Bayes classifier classifies each point $x$ to the most probable class. So let's calculate the probability of class $g$, given the point. It should be noted that when I write $\text{P}(x)$, I mean "the probability that the chosen point is in the infinitesimal neighborhood of $x$". So I should write $\text{P}(X \in b_{dx}(x))$, i.e., the probability that $X$ is in the $dx$-volume ball around $x$. If the pdf was $f(x)$, this probability is $f(x)dx$. But instead, I'll write $\text{P}(x) = f(x)$. Likewise, when I write $\text{P}(g)$, I mean $\text{P}(G=g)$.
-
-\begin{equation}
-    \text{P}(g|x) = \frac{\text{P}(g \cap x)}{\text{P}(x)} = \frac{\text{P}(g \cap x)}{\text{P}(x)}
-\end{equation}
-
-
 
 \end{document}
-
