@@ -1,18 +1,25 @@
 \documentclass{article}
+\usepackage[parfill]{parskip}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage[toc,page]{appendix}
 \graphicspath{ {./images} }
 
 \title{Notes on statistical learning}
-\author{AvanDavad}
+\author{Dávid Iván}
 
 \begin{document}
 
 \maketitle
 
-\section{Linear models and least squares}
+\tableofcontents
+
+\newpage
+\section{Introduction}
+\section{Overview of Supervised Learning}
+\subsection{Linear models and least squares}
 
 On page 12 we have that the residual sum of squares:
 
@@ -26,17 +33,7 @@ How can we differentiate with respect to $\beta$?
     \text{RSS}(\beta) = \textbf{y}^T\textbf{y} - \textbf{y}^T\textbf{X}\beta - \beta^T \textbf{X}^T \textbf{y} + \beta^T \textbf{X}^T \textbf{X} \beta
 \end{equation}
 
-We have the following rules for differenciating w.r.t a vector:
-
-\begin{equation}
-    \frac{d}{d\textbf{x}}(\textbf{x}^T\textbf{y}) = \frac{d}{d\textbf{x}}(\textbf{y}^T\textbf{x}) = \textbf{y}
-\end{equation}
-
-\begin{equation}
-    \frac{d}{d\textbf{x}} (\textbf{x}^T \textbf{A} \textbf{x}) = (\textbf{A} + \textbf{A}^T) \textbf{x}
-\end{equation}
-
-Using these rules we can differenciate RSS:
+Using (\ref{eq:da_dx}, \ref{eq:dA_dx}), we can differentiate RSS:
 
 \begin{equation}
     \frac{d}{d\beta} \text{RSS}(\beta) = 0 - (\textbf{y}^T \textbf{X})^T - \textbf{X}^T\textbf{y} + (\textbf{X}^T\textbf{X} + (\textbf{X}^T\textbf{X})^T)\beta
@@ -53,7 +50,7 @@ Setting this to zero we get the normal equations:
 \end{equation}
 
 \newpage
-\section{Statistical decision theory} \label{linear_fit}
+\subsection{Statistical decision theory} \label{linear_fit}
 
 On page 19 we have that
 
@@ -92,7 +89,7 @@ which yields
     \hat{\beta} = [\text{E} (XX^T)]^{-1} \text{E} (YX)
 \end{equation}
 
-\subsection{application. Simple linear fit.}
+\subsubsection{application. Simple linear fit.}
 
 Let's see an application for this equation. Let $X=\begin{bmatrix}x\\ 1\end{bmatrix}$, $\beta = \begin{bmatrix}a\\b\end{bmatrix}$.
 
@@ -168,11 +165,11 @@ Plug these in to the equation:
 From here we can get $\hat{a}$ and $\hat{b}$, since $\hat{\beta} = \begin{bmatrix} \hat{a} \\ \hat{b} \end{bmatrix}$
 
 \newpage
-\section{$\text{E}|Y - c|$ and the median}
+\subsection{$\text{E}|Y - c|$ and the median}
 
 On page 20, it asks the question "What happens if we replace the $L_2$ loss function with the $L_1: \text{E}|Y-f(X)|$ ?" Let's investigate this question.
 
-\subsection{discrete case}
+\subsubsection{discrete case}
 
 We can get rid of the conditional $X=x$, and just ask the question: What $c$ will minimize $\text{E}|Y-c|$? Denote this function with $g$,  so $g(c) = \text{E}|Y-c|$. Let's look at two examples.
 
@@ -252,7 +249,7 @@ Now that we showed that this function is continuous, let's find it's minimum. Si
 
 So the derivative is increasing from $-1$ to $+1$. We can distinguish two possibilities. First, assume that the derivative is never zero. In this case, we have a $k$ where $g'(I_{k-1}) < 0$ but $g'(I_k) > 0$, so the minimum is at $x_k$, the median. The second case is where there is an interval where the derivative is zero. In this case the whole interval is minimum, again, the median.
 
-\subsection{continuous case}
+\subsubsection{continuous case}
 
 Let's have the following function:
 
@@ -290,9 +287,9 @@ Again, this means the minimum is at the median.
 
 
 \newpage
-\section{Local methods in high dimensions}
+\subsection{Local methods in high dimensions}
 
-\subsection{deriving the prediction formula}
+\subsubsection{deriving the prediction formula}
 
 On page 24 we see an example of a linear data with noise. At first I was confused how it gets $\hat{y}_0 = x_0^T \beta + \sum_{i=1}^N l_i(x_0)\epsilon_i$, where $l_i(x_0)$ is the $i$th element of $\textbf{X}(\textbf{X}^T\textbf{X})^{-1}x_0$
 
@@ -341,7 +338,7 @@ putting these all together, we have:
 and this is the formula that was to be explained.
 
 
-\subsection{equation (2.47) on page 37}
+\subsubsection{equation (2.47) on page 37}
 
 \begin{equation}
   \begin{split}
@@ -405,9 +402,9 @@ We used the fact that the error has zero mean, so the variance is $\sigma^2 = \t
   \end{split}
 \end{equation}
 
-\section{Solutions for the Exercises of chapter 2}
+\subsection{Solutions for the Exercises of chapter 2}
 
-\subsection{Ex. 2.2}
+\subsubsection{Ex. 2.2}
 
 We have $X \in \mathbb{R}^p$ continuous and $G$ discrete random variables. Assume we have $K$ classes. Each class has its own distribution, let's say that class $g$ has a pdf $f_{g}(x)$ ($x \in \mathbb{R}^p$). When generating points, we first choose a class with associated probabilities $p_1, p_2, \dots, p_K$ ($\sum p_i = 1$). When we have chosen the class, we generate a point with the appropriate distribution.
 
@@ -423,7 +420,7 @@ The denominator is a normalizing constant, so the chosen class, for which $\text
     \hat{g}(x) = max_{g} \text{P} (x|g) \text{P}(g)
 \end{equation}
 
-\subsection{Ex. 2.3}
+\subsubsection{Ex. 2.3}
 
 Given a unit ball in $p$-dimension. We sample $N$ data points from it uniformly. Let $X$ be the distance from the origin. The pdf must be proportional to $x^{p-1}$, and integrating it from 0 to 1 gives 1, thus the pdf:
 
@@ -454,7 +451,7 @@ We seek and $x$ for that this probability is a half (that will give us the media
 \end{equation}
 
 
-\subsection{Ex. 2.4}
+\subsubsection{Ex. 2.4}
 
 If we choose $a$ as the first unit base vector ($a=[1,0,0,\dots,0]^T$), then $a^T \cdot x_i$ is the first coordinate of $x_i$. It is by definition (standard) normally distributed. Since the distribution is spherically symmetric, we can choose any direction $a$, $a^T \cdot x_i$ remains standard normal.
 
@@ -474,9 +471,9 @@ But this doesn't mean the points are close from each other. In the following exp
  \caption{The points get further and further from each other (red dot is a randomly selected sample point) as we increase the dimension.}
 \end{figure}
 
-\subsection{Ex. 2.5}
+\subsubsection{Ex. 2.5}
 
-\subsubsection{equation (2.27) on page 26}
+\paragraph{equation (2.27) on page 26}
 
 I won't use indices at the expectation sign, it always confuses me. So this is the expected prediction error:
 
@@ -496,26 +493,26 @@ In the expression of $\hat{y}_0$, $\vec{\epsilon}$ and $\textbf{Z}$ are the only
     \text{E}(y_0) = \text{E} (x_0^T \beta + \epsilon) = x_0 ^ T \beta
 \end{equation}
 
-\begin{equation}
-  \begin{split}
-    \text{E}(\hat{y}_0) = \text{E} (x_0^T \beta + \vec{\epsilon}^T \cdot \textbf{Z}^T x_0)\\
-    = x_0^T \beta + \text{E}(\vec{\epsilon}^T \cdot \textbf{Z}^T x_0) \\
-    = x_0^T \beta + \text{E}(\vec{\epsilon}^T) \text{E} (\textbf{Z}^T x_0) \\
-    = x_0^T \beta + \vec{0}^T \cdot \text{E} (\textbf{Z}^T x_0) \\
-    = x_0^T \beta
-  \end{split}
-\end{equation}
+\begin{flalign}
+  \begin{aligned}
+    \text{E}(\hat{y}_0) =& \text{E} (x_0^T \beta + \vec{\epsilon}^T \cdot \textbf{Z}^T x_0)\\
+    =& x_0^T \beta + \text{E}(\vec{\epsilon}^T \cdot \textbf{Z}^T x_0) \\
+    =& x_0^T \beta + \text{E}(\vec{\epsilon}^T) \text{E} (\textbf{Z}^T x_0) \\
+    =& x_0^T \beta + \vec{0}^T \cdot \text{E} (\textbf{Z}^T x_0) \\
+    =& x_0^T \beta
+  \end{aligned}
+\end{flalign}
 
 Here I used that $\vec{\epsilon}$ and $\textbf{Z}$ are independent, so the expectation value of their product is the product of their expectations. For simplicity, denote $\mu \equiv \text{E}(y_0) = \text{E}(\hat{y}_0) = x_0^T \beta$. The expected prediction error:
 
-\begin{equation}
-  \begin{split}
-    \text{EPE}(x_0) = \text{E} (y_0 - \mu + \mu - \hat{y}_0)^2 \\
-    = \text{E} (y_0 - \mu) ^ 2 - 2 \cdot \text{E} ((y_0 - \mu)(\hat{y}_0 - \mu)) + \text{E} (\hat{y}_0 - \mu)^2\\
-    = \text{E} (y_0 - \mu) ^ 2 + 0 + \text{E} (\hat{y}_0 - \mu) ^ 2\\
-    = \text{Var}(y_0) + \text{Var}(\hat{y}_0)
-  \end{split}
-\end{equation}
+\begin{flalign}
+  \begin{aligned}
+    \text{EPE}(x_0) =& \text{E} (y_0 - \mu + \mu - \hat{y}_0)^2 \\
+    =& \text{E} (y_0 - \mu) ^ 2 - 2 \cdot \text{E} ((y_0 - \mu)(\hat{y}_0 - \mu)) + \text{E} (\hat{y}_0 - \mu)^2\\
+    =& \text{E} (y_0 - \mu) ^ 2 + 0 + \text{E} (\hat{y}_0 - \mu) ^ 2\\
+    =& \text{Var}(y_0) + \text{Var}(\hat{y}_0)
+  \end{aligned}
+\end{flalign}
 
 Note that $y_0$ and $\hat{y}_0$ are independent. The epsilon in $y_0$ is a scalar and is nothing to do with the vector epsilon in $\hat{y}_0$. This is why $\text{E} ((y_0 - \mu)(\hat{y}_0 - \mu))$ is zero. Now let's derive the variances:
 
@@ -523,41 +520,16 @@ Note that $y_0$ and $\hat{y}_0$ are independent. The epsilon in $y_0$ is a scala
     \text{Var}(y_0) = \text{Var}(\mu + \epsilon) = \text{Var}(\epsilon) = \sigma ^2
 \end{equation}
 
-This was the easy part. It is much more difficult to get the variance for $\hat{y}_0$. We know that if $a$ is a constant scalar, and $X$ is a scalar random variable, then
+Furthermore, we can write $\text{Cov}(X,X) = \text{E} ((X-\text{E}X)\cdot (X-\text{E}X)^T) = \text{E}(X\cdot X^T) - (\text{E}X) (\text{E}X^T)$. Let's apply (\ref{eq:vector_mul_variance}) and (\ref{eq:covariance_formulae}) to derive the variance of $\hat{y}_0$:
 
-\begin{equation}
-    \text{Var}(aX) = a^2 \cdot \text{Var}(X)
-\end{equation}
-
-Okay, but what if $a$ is a vector, just as $X$, and we take the inner product $a^T\cdot X$? What is the variance $\text{Var}(a^T\cdot X)$?
-
-\begin{equation}
-\begin{split}
-    \text{Var}(a^T\cdot X) = \text{Var}(a_1 \cdot X_1 + a_2 \cdot X_2 + \dots + a_n \cdot X_n)\\
-    = \text{E} \left( \sum_{i} a_i \cdot (X_i - \text{E} X_i)\right)^2\\
-    = \text{E} \left( \sum_{i,j} a_i  \cdot (X_i - \text{E} X_i) \cdot a_j \cdot (X_j - \text{E} X_j)\right)\\
-    = \sum_{i,j} a_i \cdot a_j \cdot \text{E} \left( (X_i - \text{E} X_i) \cdot (X_j - \text{E} X_j) \right)\\
-    = \sum_{i,j} a_i \cdot a_j \cdot \text{Cov}(X_i, X_j)\\
-    = a^T \cdot \text{Cov}(X,X) \cdot a = a^T \cdot \Sigma \cdot a
-\end{split}
-\end{equation}
-
-Here $\Sigma \equiv \text{Cov}(X,X)$ is the covariance matrix, $\text{Cov}(X,X)_{i,j} = \text{Cov}(X_i, X_j)$. Let's state our finding again. $a$ is a constant vector, $X$ is a random vector (same dimension), then:
-
-\begin{equation}
-    \text{Var}(a^T \cdot X) = a^T \cdot \text{Cov}(X,X) \cdot a
-\end{equation}
-
-Furthermore, we can write $\text{Cov}(X,X) = \text{E} ((X-\text{E}X)\cdot (X-\text{E}X)^T) = \text{E}(X\cdot X^T) - (\text{E}X) (\text{E}X^T)$. Now we can apply this to derive the variance of $\hat{y}_0$:
-
-\begin{equation} \label{eq:1}
-  \begin{split}
-    \text{Var}(\hat{y}_0) = \text{Var}(\mu + x_0^T \cdot \textbf{Z} \cdot \vec{\epsilon}) = \text{Var} (x_0^T \cdot \textbf{Z} \cdot \vec{\epsilon})\\
-     = x_0^T \cdot \text{Cov}(\textbf{Z} \cdot \vec{\epsilon}, \textbf{Z} \cdot \vec{\epsilon}) \cdot x_0\\
-     = x_0^T \cdot \left( \text{E}(\textbf{Z} \vec{\epsilon} \cdot \vec{\epsilon}^T \textbf{Z}^T) - \text{E}(\textbf{Z}\vec{\epsilon}) \cdot \text{E} (\vec{\epsilon}^T \textbf{Z}^T) \right) \cdot x_0\\
-     = x_0^T \cdot \text{E}(\textbf{Z} \vec{\epsilon} \cdot \vec{\epsilon}^T \textbf{Z}^T)  \cdot x_0
-  \end{split}
-\end{equation}
+\begin{flalign} \label{eq:1}
+  \begin{aligned}
+    \text{Var}(\hat{y}_0) =& \text{Var}(\mu + x_0^T \cdot \textbf{Z} \cdot \vec{\epsilon}) = \text{Var} (x_0^T \cdot \textbf{Z} \cdot \vec{\epsilon})\\
+     =& x_0^T \cdot \text{Cov}(\textbf{Z} \cdot \vec{\epsilon}, \textbf{Z} \cdot \vec{\epsilon}) \cdot x_0\\
+     =& x_0^T \cdot \left( \text{E}(\textbf{Z} \vec{\epsilon} \cdot \vec{\epsilon}^T \textbf{Z}^T) - \text{E}(\textbf{Z}\vec{\epsilon}) \cdot \text{E} (\vec{\epsilon}^T \textbf{Z}^T) \right) \cdot x_0\\
+     =& x_0^T \cdot \text{E}(\textbf{Z} \vec{\epsilon} \cdot \vec{\epsilon}^T \textbf{Z}^T)  \cdot x_0
+  \end{aligned}
+\end{flalign}
 
 Here we used the fact that $\textbf{Z}$ and $\vec{\epsilon}$ are independent, so $\text{E}(\textbf{Z} \vec{\epsilon}) = \text{E}\textbf{Z} \cdot \text{E} \vec{\epsilon} = \text{E}\textbf{Z} \cdot \vec{0} = \vec{0}$, and $\vec{0} \cdot \vec{0}^T = \textbf{0}$, zero matrix.
 
@@ -589,7 +561,7 @@ Putting it all together:
 
 And this is what we wanted to derive.
 
-\subsubsection{equation (2.28) on page 26}
+\paragraph{equation (2.28) on page 26}
 
 \begin{equation}
     \text{E} \left( x^T_0 \text{Cov}(X)^{-1}x_0 \right) = \text{E} \sum_{i,j} x_{0,i} \text{Cov}(X)^{-1}_{i,j} x_{0,j}
@@ -607,7 +579,7 @@ Assuming that $x_0 \sim X$, i.e., $x_0$ (the test point) has the same distributi
 \end{equation}
 
 
-\subsection{Ex. 2.6}
+\subsubsection{Ex. 2.6}
 
 Assume that we have $n$ identical inputs $x_1 = x_2 = \dots = x_n \equiv x$ with outputs $y_1$, $y_2$, $\dots$, $y_n$. The least squares formula:
 
@@ -639,7 +611,7 @@ So the difference of the 2 expressions is a constant that doesn't depend on $\th
 
 Whenever we have observations with identical values $x$, we can always refactor the $RSS$ for the groups according to (\ref{eq:ex2.6.1}) $\to$ (\ref{eq:eq2.6.2}).
 
-\subsection{Ex. 2.7}
+\subsubsection{Ex. 2.7}
 
 Our estimator according to the problem statement:
 
@@ -692,5 +664,212 @@ From this we get the weights:
 \begin{equation}
     l_i(x_0; \mathcal{X}) = x^T_0 \left( \sum_{j=1}^{N} x_j x^T_j \right)^{-1} x_i
 \end{equation}
+
+\subsubsection{Ex. 2.9}
+
+The short answer is this:
+
+\begin{equation}
+    \text{E}R_{tr}(\hat{\beta}) \le \text{E} R_{tr} (\text{E} \hat{\beta}) = \text{E} R_{te} (\text{E} \hat{\beta}) \le \text{E}R_{te}(\hat{\beta})
+\end{equation}
+
+Now I explain this in more details.
+
+1. Proving the left inequality. $\hat{\beta}$ comes from the following:
+
+\begin{equation}
+    \hat{\beta} = \text{arg} \min_{\beta'} R_{tr}(\beta')
+\end{equation}
+
+This implies that for any fix $\beta$:
+
+\begin{equation}
+    R_{tr} (\hat{\beta}) \le R_{tr} (\beta)
+\end{equation}
+
+Taking the expectation of both sides:
+
+\begin{equation}
+    \text{E} R_{tr} (\hat{\beta}) \le \text{E} R_{tr} (\beta)
+\end{equation}
+
+$\hat{\beta}$ is a random variable (which depends on the training data), we can take the expectation, so we get $\text{E}\hat{\beta}$ which is a fix, non-random vector. Substituting into the above inequality we get what we wanted to prove:
+
+\begin{equation}
+    \text{E} R_{tr} (\hat{\beta}) \le \text{E} R_{tr} (\text{E}\hat{\beta})
+\end{equation}
+
+
+2. Proving the equation in the middle. For any fix $\beta$:
+
+\begin{equation}
+    \text{E} R_{tr} (\beta) = \frac 1N \sum_{i=1}^{N} \text{E} (y_i - \beta^{T} x_i) ^{2} = \text{E} (Y - \beta^{T} X)^{2}
+\end{equation}
+
+\begin{equation}
+    \text{E} R_{te} (\beta) = \frac 1M \sum_{i=1}^{M} \text{E} (\widetilde{y}_i - \beta^{T} \widetilde{x}_i) ^{2} = \text{E} (Y - \beta^{T} X)^{2}
+\end{equation}
+
+This is because both the train and the test data come from the same distribution. So for any fix $\beta$, $\text{E} R_{tr} (\beta) = \text{E} R_{te} (\beta)$. Since $\text{E}\hat{\beta}$ is a fix vector, we're done with this part.
+
+3. Proving the right inequality. For this we use the fact that the training data and the test data are independent. Thus $\hat{\beta}$ and the test data are also independent. For this part, just forget about the training data. Think of $\hat{\beta}$ as a random vector independent from the (test) data.
+
+\begin{equation}
+    \text{E} R_{te}(\hat{\beta}) = \text{E} (Y - \hat{\beta}^{T} X) ^{2} = \text{E} \text{E} \left( (Y - \hat{\beta}^{T} X) ^{2} | X,Y\right)
+\end{equation}
+
+\begin{flalign}
+  \begin{aligned}
+    \text{E} \left( (Y - \hat{\beta}^{T} X)^{2} | X, Y \right) =& \text{E} \left( Y^2 - 2Y\hat{\beta}^{T} X + (\hat{\beta}^T X)^{2} | X, Y \right)\\
+    =& Y^2 - 2Y \text{E}(\hat{\beta}^{T}) X + X^{T} \text{E}(\hat{\beta} \hat{\beta}^T) X\\
+    =& Y^2 - 2Y \text{E}(\hat{\beta}^{T}) X + X^{T} [ \text{E}\hat{\beta} \cdot \text{E}\hat{\beta}^T + \text{Cov}(\hat{\beta}) ] X\\
+    =& Y^2 - 2Y \text{E}(\hat{\beta}^{T}) X + (\text{E}\hat{\beta}^T) X X^{T} (\text{E} \hat{\beta}) + X^{T} \text{Cov}(\hat{\beta}) X
+  \end{aligned}
+\end{flalign}
+
+Since the covariance matrix is positive semi-definite, $X^{T} \text{Cov}(\beta) X \ge 0$
+
+\begin{flalign}
+  \begin{aligned}
+    \text{E} \left( (Y - \hat{\beta}^{T} X)^{2} | X, Y \right) \ge& Y^2 - 2Y \text{E}(\hat{\beta}^{T}) X + (\text{E}\hat{\beta}^T) X X^{T} (\text{E}) \hat{\beta}\\
+    \text{E} \left( (Y - \hat{\beta}^{T} X)^{2} | X, Y \right) \ge& (Y - \text{E}(\hat{\beta}^{T}) X) ^{2}\\
+    \text{E} \text{E} \left( (Y - \hat{\beta}^{T} X)^{2} | X, Y \right) \ge& \text{E} (Y - \text{E}(\hat{\beta}^{T}) X)^{2}\\
+    \text{E} (Y - \hat{\beta}^{T} X) ^{2} \ge& \text{E} (Y - \text{E}(\hat{\beta}^{T}) X)^{2}\\
+    \text{E} R_{te}(\hat{\beta}) \ge& \text{E} R_{te}(\text{E} \hat{\beta})
+  \end{aligned}
+\end{flalign}
+
+\newpage
+\section{Linear Methods for Regression}
+
+\subsection{equations on page 47 and 48}
+
+\paragraph{Variance of beta hat (page 47).}
+
+We know the formulae for $\hat{\beta}$ (equation 3.6 on page 45):
+
+\begin{equation}
+    \hat{\beta} = (\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T} \mathbf{y}
+\end{equation}
+
+Using (\ref{eq:vector_mul_variance}):
+
+\begin{flalign}
+\begin{aligned}
+    \text{Var}(\hat{\beta}) \equiv& \text{Cov}(\hat{\beta}) \\
+    =& \text{Cov}\left((\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T} \mathbf{y}\right) \\
+    =& (\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}\cdot\text{Cov}\left(\mathbf{y}\right)\cdot \textbf{X} (\mathbf{X}^{T}\mathbf{X})^{-1} \\
+    =& (\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}\cdot \sigma^2 \textbf{I} \cdot \textbf{X} (\mathbf{X}^{T}\mathbf{X})^{-1}\\
+    =&\sigma^2 \cdot (\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T} \textbf{X} (\mathbf{X}^{T}\mathbf{X})^{-1}\\
+    =&\sigma^2 \cdot (\mathbf{X}^{T}\mathbf{X})^{-1}
+\end{aligned}
+\end{flalign}
+
+\paragraph{Sigma hat.}
+
+Deriving the expectation of $\hat{\sigma}^{2}$. We know that $\textbf{H}$, that hat matrix is an orthogonal projection onto the column space of $\textbf{X}$. This implies that $\textbf{H}^2 = \textbf{H} = \textbf{H}^{T}$, and $\text{Tr}(\textbf{H}) = p+1$ (the trace of an orthogonal projection is the dimension of the subspace it projects onto, that is, the rank of \textbf{X}). Another thing is that $(\textbf{I} - \textbf{H})$ is also an orthogonal projection. It projects to the orthogonal complement of the column space of $\textbf{X}$. So $(\textbf{I} - \textbf{H})^2 = (\textbf{I} - \textbf{H}) = (\textbf{I} - \textbf{H})^{T}$, and $\text{Tr}(\textbf{I} - \textbf{H}) = N - p - 1$.
+
+\begin{flalign}
+\begin{aligned}
+    \sum_{i=1}^{N}(y_i - \hat{y}_i)^{2} =& (\textbf{y} - \hat{\textbf{y}})^{T}(\textbf{y} - \hat{\textbf{y}}) \\
+    =& (\textbf{y} - \textbf{H}\textbf{y})^{T}(\textbf{y} - \textbf{H}\textbf{y}) \\
+    =& ((\textbf{I} - \textbf{H})\textbf{y})^{T}((\textbf{I} - \textbf{H})\textbf{y}) \\
+    =& \textbf{y}^{T}(\textbf{I} - \textbf{H})^{T}(\textbf{I} - \textbf{H})\textbf{y} \\
+    =& \textbf{y}^{T}(\textbf{I} - \textbf{H})^{2}\textbf{y} = \textbf{y}^{T}(\textbf{I} - \textbf{H})\textbf{y} \\
+    =& \text{Tr} (\textbf{y}^{T}(\textbf{I} - \textbf{H})\textbf{y}) = \text{Tr} ((\textbf{I} - \textbf{H})\textbf{y}\textbf{y}^{T})
+\end{aligned}
+\end{flalign}
+
+We know that $\text{Cov}(\textbf{y}) = \sigma^2 \textbf{I} = \text{E}(\textbf{y} \textbf{y}^{T}) - (\text{E} \textbf{y}) \cdot (\text{E} \textbf{y}^{T})$. Taking the expectation:
+
+\begin{flalign}
+\begin{aligned}
+    \text{E} \sum_{i=1}^{N}(y_i - \hat{y}_i)^{2} =& \text{E} \left(\text{Tr} ((\textbf{I} - \textbf{H})\textbf{y}\textbf{y}^{T})\right) \\
+    =& \text{Tr}((\textbf{I} - \textbf{H}) \text{E}(\textbf{y} \textbf{y}^{T})) \\
+    =& \text{Tr}((\textbf{I} - \textbf{H}) \cdot (\sigma^2 \textbf{I} + \text{E} \textbf{y} \cdot \text{E} \textbf{y}^{T})) \\
+    =& \text{Tr}((\textbf{I} - \textbf{H}) \sigma^2  + (\textbf{I} - \textbf{H}) \cdot \text{E} \textbf{y} \cdot \text{E} \textbf{y}^{T}) \\
+    =& \text{Tr}((\textbf{I} - \textbf{H}) \sigma^2)  + \text{Tr}((\textbf{I} - \textbf{H}) \cdot \text{E} \textbf{y} \cdot \text{E} \textbf{y}^{T}) \\
+    =& \text{Tr}(\textbf{I} - \textbf{H})\cdot\sigma^2  + \text{Tr}(\text{E} \textbf{y}^{T} \cdot (\textbf{I} - \textbf{H}) \cdot \text{E} \textbf{y}) \\
+    =& (N-p-1) \cdot \sigma^2  + \text{E} \textbf{y}^{T} \cdot (\textbf{I} - \textbf{H}) \cdot \text{E} \textbf{y} \\
+    =& (N-p-1) \cdot \sigma^2
+\end{aligned}
+\end{flalign}
+
+At the last step we had to assume that $\text{E}\textbf{y}$ lies in the column space of $\textbf{X}$, because it means that $\text{E}\textbf{y}$ and $(\textbf{I} - \textbf{H})\text{E}\textbf{y}$ are perpendicular to each other. This means that the response (y) is linear in its inputs, plus a random variable with zero mean. Now we see that
+
+\begin{equation}
+    \frac{1}{N-p-1} \text{E} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2 = \sigma^2 \to \text{E} \hat{\sigma}^2 = \sigma^2
+\end{equation}
+
+\newpage
+\begin{appendices}
+
+Here I collected the useful mathematical knowledge required to understand some proofs.
+
+\section{differentiation w.r.t. a vector}
+
+Let $\mathbf{a} \in \mathbb{R}^n$ be a constant vector, $\mathbf{x} \in \mathbb{R}^n$. Then
+
+\begin{equation} \label{eq:da_dx}
+    \frac{d}{d\mathbf{x}} (\mathbf{x}^{T}\mathbf{a}) = \frac{d}{d\mathbf{x}} (\mathbf{a}^{T}\mathbf{x}) = \mathbf{a}
+\end{equation}
+
+Let $\mathbf{A} \in \mathbb{R}^{nxn}$ be a constant matrix, $\mathbf{x} \in \mathbb{R}^n$ Then
+
+\begin{equation} \label{eq:dA_dx}
+    \frac{d}{d\mathbf{x}} (\mathbf{x}^{T}\mathbf{A}\mathbf{x}) = (\mathbf{A} + \mathbf{A}^T) \mathbf{x}
+\end{equation}
+
+\section{variance and covariance properties}
+
+\subsection{scalar multiple}
+
+We know that if $a \in \mathbb{R}$ is a constant scalar, and $X$ is a scalar random variable, then
+
+\begin{equation}
+    \text{Var}(aX) = a^2 \cdot \text{Var}(X)
+\end{equation}
+
+\subsection{vector multiple}
+
+Now what if $a \in \mathbb{R}^{p}$ is a (constant) vector, and $X \in \mathbb{R}^{p}$ is a random vector, and we take the inner product $a^T\cdot X$? What is the variance $\text{Var}(a^T\cdot X)$?
+
+\begin{flalign}
+\begin{aligned}
+    \text{Var}(a^T\cdot X) =& \text{Var}(a_1 \cdot X_1 + a_2 \cdot X_2 + \dots + a_n \cdot X_n)\\
+    =& \text{E} \left( \sum_{i} a_i \cdot (X_i - \text{E} X_i)\right)^2\\
+    =& \text{E} \left( \sum_{i,j} a_i  \cdot (X_i - \text{E} X_i) \cdot a_j \cdot (X_j - \text{E} X_j)\right)\\
+    =& \sum_{i,j} a_i \cdot a_j \cdot \text{E} \left( (X_i - \text{E} X_i) \cdot (X_j - \text{E} X_j) \right)\\
+    =& \sum_{i,j} a_i \cdot a_j \cdot \text{Cov}(X_i, X_j)\\
+    =& a^T \cdot \text{Cov}(X,X) \cdot a = a^T \cdot \Sigma \cdot a
+\end{aligned}
+\end{flalign}
+
+Here $\Sigma \equiv \text{Cov}(X,X)$ is the covariance matrix, $\text{Cov}(X,X)_{i,j} = \text{Cov}(X_i, X_j)$. Let's state our finding again. $a \in \mathbb{R}^{p}$ is a constant vector, $X \in \mathbb{R}^{p}$ is a random vector, then:
+
+\begin{equation} \label{eq:vector_mul_variance}
+    \text{Var}(a^T \cdot X) = a^T \cdot \text{Cov}(X,X) \cdot a
+\end{equation}
+
+Furthermore, we can write for the covariance matrix:
+
+\begin{equation} \label{eq:covariance_formulae}
+    \text{Cov}(X,X) = \text{E} ((X-\text{E}X)\cdot (X-\text{E}X)^T) = \text{E}(X\cdot X^T) - (\text{E}X) (\text{E}X^T)
+\end{equation}
+
+\subsection{matrix multiple}
+Let $A \in \mathbb{R}^{nxp}$ a constant matrix, $X \in \mathbb{R}^{p}$ a random vector. The covariance matrix:
+
+\begin{flalign} \label{eq:matrix_mul_cov}
+\begin{aligned}
+    \text{Cov}(AX) =& \text{E} (AXX^{T}A^{T}) - \text{E}(AX)\text{E}(X^{T}A^{T})\\
+    =& A \cdot \text{E} (XX^{T}) \cdot A^{T} - A \cdot \text{E}(X) \text{E} (X^{T}) \cdot A^{T} \\
+    =& A \cdot \left( \text{E} (XX^{T}) - \text{E}(X) \text{E}(X^{T}) \right) \cdot A^{T} \\
+    =& A \cdot \text{Cov}(X) \cdot A^{T}
+\end{aligned}
+\end{flalign}
+
+
+\end{appendices}
 
 \end{document}
