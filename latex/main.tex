@@ -2,6 +2,7 @@
 \usepackage[parfill]{parskip}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
+\usepackage{amsthm} % for proofs
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage[toc,page]{appendix}
@@ -463,7 +464,7 @@ I created an experiment on this. Created 1000 sample points in $p$ dimension, an
  \caption{The sample points get further from the origin as we increase the dimension.}
 \end{figure}
 
-But this doesn't mean the points are close from each other. In the following experiment I took the random sample points, chose one of them and set it as the new origin. We can see that still the points are far from a random sample point as we increase the dimension.
+But this doesn't mean the points are close to each other. In the following experiment I took the random sample points, chose one of them and set it as the new origin. We can see that still the points are far from a random sample point as we increase the dimension.
 
 \begin{figure}[ht]
  \centering
@@ -769,7 +770,7 @@ Using (\ref{eq:vector_mul_variance}):
 
 Deriving the expectation of $\hat{\sigma}^{2}$. We know that $\textbf{H}$, that hat matrix is an orthogonal projection onto the column space of $\textbf{X}$. This implies that $\textbf{H}^2 = \textbf{H} = \textbf{H}^{T}$, and $\text{Tr}(\textbf{H}) = p+1$ (the trace of an orthogonal projection is the dimension of the subspace it projects onto, that is, the rank of \textbf{X}). Another thing is that $(\textbf{I} - \textbf{H})$ is also an orthogonal projection. It projects to the orthogonal complement of the column space of $\textbf{X}$. So $(\textbf{I} - \textbf{H})^2 = (\textbf{I} - \textbf{H}) = (\textbf{I} - \textbf{H})^{T}$, and $\text{Tr}(\textbf{I} - \textbf{H}) = N - p - 1$.
 
-\begin{flalign}
+\begin{flalign} \label{eq:sigma_hat_residual}
 \begin{aligned}
     \sum_{i=1}^{N}(y_i - \hat{y}_i)^{2} =& (\textbf{y} - \hat{\textbf{y}})^{T}(\textbf{y} - \hat{\textbf{y}}) \\
     =& (\textbf{y} - \textbf{H}\textbf{y})^{T}(\textbf{y} - \textbf{H}\textbf{y}) \\
@@ -800,6 +801,179 @@ At the last step we had to assume that $\text{E}\textbf{y}$ lies in the column s
 \begin{equation}
     \frac{1}{N-p-1} \text{E} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2 = \sigma^2 \to \text{E} \hat{\sigma}^2 = \sigma^2
 \end{equation}
+
+\paragraph{Distribution of sigma hat.}
+
+(3.11) states that $\hat{\sigma}^{2}$ is proportional to a Chi-square distribution with $N-p-1$ parameters. Now we use the assumption that $\mathbf{y} = \mathbf{X}\beta + \epsilon$, where $\mathbf{X}$ and $\beta$ are fixed, and $\epsilon$ is a vector of iid normal random variables with zero mean and $\sigma^2$ variance. According to (\ref{eq:sigma_hat_residual}) we can write that:
+
+\begin{flalign}
+\begin{aligned}
+    \sum_{i=1}^{N}(y_i - \hat{y}_i)^{2} = \left\Vert(\textbf{I} - \textbf{H})\textbf{y}\right\Vert^{2}
+\end{aligned}
+\end{flalign}
+
+Since $\textbf{H}$ is a projection to the column space of $\textbf{X}$, $\textbf{H}\textbf{X} = \textbf{X}$, and $(\textbf{I} - \textbf{H})\textbf{X} = \textbf{X} - \textbf{H} \textbf{X} = \textbf{X} - \textbf{X} = \textbf{0}$. So $(\textbf{I} - \textbf{H})\textbf{y} = (\textbf{I} - \textbf{H}) \cdot (\mathbf{X}\beta + \epsilon) = (\textbf{I} - \textbf{H}) \cdot \epsilon$.
+
+\begin{flalign}
+\begin{aligned}
+    \sum_{i=1}^{N}(y_i - \hat{y}_i)^{2} = \left\Vert(\textbf{I} - \textbf{H})\epsilon\right\Vert^{2}
+\end{aligned}
+\end{flalign}
+
+Now it is clear that this is $\sigma^2 \cdot \chi_{N-p-1}^{2}$, because we project the spherical normal distribution ($\epsilon$) to a (N-p-1)-dimensional plane (subspace).
+
+\paragraph{The Z-score.}
+
+According to (3.12) we form the standardized coefficient or Z-score
+
+\begin{equation}
+    z_j = \frac{\hat{\beta}_j}{\hat{\sigma} \sqrt{v_j}}
+\end{equation}
+
+Why is this a t-distribution under the null hypothesis that $\beta_j = 0$?
+
+\begin{equation}
+    \hat{\beta} = \beta + \sigma \cdot (\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T}\epsilon = \beta + \sigma \cdot (\mathbf{X}^{T}\mathbf{X})^{-1}\mathbf{X}^{T} \mathbf{H} \epsilon
+\end{equation}
+
+\begin{equation}
+    \hat{\sigma}^{2} = \frac{1}{N-p-1} \left\Vert(\textbf{I} - \textbf{H})\epsilon\right\Vert^{2}
+\end{equation}
+
+Now because $\textbf{H}\epsilon$ and $(\textbf{I} - \textbf{H})\epsilon$ are independent, $\hat{\beta}$ and $\hat{\sigma}^{2}$ are also independent. Moreover, $\hat{\beta}$ has a covariance $\sigma^2 (\textbf{X}^{T} \textbf{X})^{-1}$, $\hat{\beta}_j$ has a variance $\sigma^{2} \cdot v_j$, with $v_j = [(\textbf{X}^{T} \textbf{X})^{-1}]_{jj}$. So under the null hypothesis,
+
+\begin{equation}
+    \frac{\beta_j}{\sigma \sqrt{v_j}} \sim N(0,1)
+\end{equation}
+
+Also,
+
+\begin{equation}
+    \frac{\hat{\sigma}}{\sigma} \sim \sqrt{\frac{\chi_{N-p-1}^{2}}{N-p-1}}
+\end{equation}
+
+According to (\ref{eq:t_distribution}), the following has a Student's t-distribution with $N-p-1$ degrees of freedom
+
+\begin{equation}
+    \frac{\frac{\beta_j}{\sigma \sqrt{v_j}}}{\frac{\hat{\sigma}}{\sigma}} = \frac{\beta_j}{\hat{\sigma} \sqrt{v_j}} = z_j
+\end{equation}
+
+\paragraph{F statistic.}
+
+According to (3.13) on page 48, we form the following statistic to decide whether we can drop groups of coefficients simultaneously.
+
+\begin{equation}
+    F = \frac{(\text{RSS}_0 - \text{RSS}_1) / (p_1 - p_0)}{\text{RSS}_1 / (N - p_1 - 1)}
+\end{equation}
+
+I will show that under the null-hypothesis, $\text{RSS}_0 - \text{RSS}_1$ is chi-squared with $p_1 - p_0$ degrees of freedom, $\text{RSS}_1$ is chi-squared with $N-p_1 - 1$ degrees of freedom, and are independent. So according to appendix \ref{app:F_distribution}, $F$ has indeed an F-distribution with $(p_1 - p_0), (N-p_1-1)$ parameters.
+
+Let $X$ be the $N \times (p_0 + 1)$ data-matrix, while $X_1 = [X| X']$ the extended $N \times (p_1+1)$ data-matrix. We assume that the smaller model is true, i.e., $y = X\beta + \epsilon$. We have two different estimates for $y$. $\hat{y}_0 = H_0 y$ comes from the smaller model, while $\hat{y}_1 = H_1 y$ comes from the bigger model. $H_0$ and $H_1$ are projections. $H_1$ projects onto the column space of $X_1$, which we denote by $W_1$. $H_0$ projects onto the column space of $X$, which we denote by $W_0$, this is actually a subspace of $W_1$. Let $W_2$ be a subspace in $W_1$ that is orthogonal to $W_0$. $H_1 - H_0$ projects onto this subspace. Now calculate the residual sum of squares.
+
+\begin{flalign}
+\begin{aligned}
+    \text{RSS}_0=&\left\Vert y - \hat{y}_0 \right\Vert^2\\
+    =& \left\Vert y - H_0 y \right\Vert^2\\
+    =& \left\Vert (I-H_0)y \right\Vert^2\\
+    =& \left\Vert (I-H_0) (X\beta + \epsilon) \right\Vert^2\\
+    =& \left\Vert (I-H_0) X\beta + (I-H_0)\epsilon \right\Vert^2\\
+    =& \left\Vert 0\beta + (I-H_0)\epsilon \right\Vert^2\\
+    =& \left\Vert (I-H_0)\epsilon \right\Vert^2\\
+    =& \epsilon^T (I-H_0)^{T} (I-H_0) \epsilon\\
+    =& \epsilon^T (I-H_0)(I-H_0) \epsilon\\
+    =& \epsilon^T (I-H_0)\epsilon
+\end{aligned}
+\end{flalign}
+
+Similarly,
+
+\begin{equation}
+    \text{RSS}_1 = \epsilon^T (I-H_1)\epsilon
+\end{equation}
+
+Note that here we used the fact that the columns of $X$ make up the subspace $W_0$. $I-H_0$ projects onto $W_0^{\perp}$, so $(I-H_0)X = 0$. Similarly, $(I-H_1) X = 0$.
+
+From these, we can calculate the difference of the residual sum of squares.
+
+\begin{flalign}
+\begin{aligned}
+    \text{RSS}_0 - \text{RSS}_1 =& \epsilon^T (H_1 - H_0) \epsilon\\
+    =& \left\Vert (H_1 - H_0) \epsilon \right\Vert ^2
+\end{aligned}
+\end{flalign}
+
+So $\text{RSS}_0 - \text{RSS}_1$ is a chi-squared random variable with $p_1 - p_0$ degrees of freedom (the dimension of $W_2$). And $\text{RSS}_1$ is also chi-squared with $N-p_1-1$ degrees of freedom (the dimension of $W_1^{\perp}$). $\text{RSS}_0 - \text{RSS}_1$ and $\text{RSS}_1$ are independent, because $I-H_1$ and $H_1 - H_0$ project onto perpendicular subspaces.
+
+\subsection{Solutions for the Exercises of chapter 3}
+
+\subsubsection{Ex. 3.1}
+According to Appendix (\ref{app:F_distribution}), the F-statistics can be written in the form:
+
+\begin{equation}
+    F \sim \frac{\chi^2_{d_1}/d_1}{\chi^2_{d_2}/d_2}
+\end{equation}
+
+where in our case $d_1 = p_1 - p_0$, $d_2 = N-p_1-1$. Dropping a single coefficient means that $p_1 = p_0 + 1 \to p_1 - p_0 = 1$, so
+
+\begin{equation}
+    F \sim \frac{\chi^2_{1}/1}{\chi^2_{d_2}/d_2} \sim \frac{N(0,1)^2}{\chi^2_{d_2}/d_2} \sim \left( \frac{N(0,1)}{\sqrt{\frac{\chi^2_{N-p_1-1}}{(N-p_1-1)}}}\right)^2 \sim t^2_{N-p_1-1}
+\end{equation}
+
+The Z-score is t-distributed with $N-p-1$ parameters, so the F-statistics for dropping a single coefficient is indeed \emph{distributed} as the square of the corresponding Z-score. Well, this doesn't prove that the square of the calculated $Z$ is equal to the calculated $F$. So let's prove it. Without loss of generality we can assume that we test for the last coefficient, $j=p+1$.
+
+\begin{equation}
+    z^2_j = \frac{\hat{\beta_j}^2}{\hat{\sigma}^2 v_j}
+\end{equation}
+
+We have to show that this equals to the following $F$:
+
+\begin{equation}
+    F = \frac{(\text{RSS}_0 - \text{RSS}_1)/(p_1 - p_0)}{\text{RSS}_1/(N-p_1-1)}
+\end{equation}
+
+Now since $(N-p_1-1)\hat{\sigma}^2 = \text{RSS}_1$, and $p_1 - p_0 = 1$, we have to show that
+
+\begin{equation}
+    \frac{\hat{\beta_j}^2}{v_j} = \text{RSS}_0 - \text{RSS}_1
+\end{equation}
+
+Denote the $j$th column (=$j$th row) of $(X^TX)^{-1}$ as $b_j$. With this notation
+
+\begin{equation}
+    \hat{\beta}_j = b^T_j X^Ty = y^T X b_j
+\end{equation}
+
+\begin{equation}
+    \frac{\hat{\beta_j}^2}{v_j} = y^T \frac{Xb_j \cdot b^T_j X^T}{v_j} y
+\end{equation}
+
+\begin{equation}
+    \text{RSS}_0 - \text{RSS}_1 = y^T (H_1 - H_0) y
+\end{equation}
+
+Where $H_1$ projects onto the column space of $X$, $H_0$ projects onto $W_0$. $W_0$ is the column space of the matrix same as $X$ but dropping the last column. According to Appendix (\ref{app:spec_Xb}):
+
+\begin{equation}
+    H_1 - H_0 = \frac{Xb_j \cdot b^T_j X^T}{v_j}
+\end{equation}
+
+which concludes the proof.
+
+\subsubsection{Ex. 3.2}
+
+\begin{figure}[ht]
+ \centering
+  \includegraphics[width=200pt]{images/ex_3_2_a.png}
+ \caption{True function, predicted function, with 95\% confidence band (pointwise).}
+\end{figure}
+
+\begin{figure}[ht]
+ \centering
+  \includegraphics[width=200pt]{images/ex_3_2_b.png}
+ \caption{True function, predicted function, with 95\% confidence band (from multivariate normal).}
+\end{figure}
+
+\subsubsection{Ex. 3.3}
 
 \newpage
 \begin{appendices}
@@ -869,6 +1043,166 @@ Let $A \in \mathbb{R}^{nxp}$ a constant matrix, $X \in \mathbb{R}^{p}$ a random 
 \end{aligned}
 \end{flalign}
 
+\section{distributions}
+
+\subsection{Student's t-distribution}
+
+The t-distribution with $\nu$ degrees of freedom can be expressed as
+
+\begin{equation} \label{eq:t_distribution}
+    T = \frac{Z}{\sqrt{V/\nu}}
+\end{equation}
+
+where
+
+\begin{itemize}
+    \item $Z\sim N(0,1)$
+    \item $V\sim \chi_{\nu}^{2}$
+    \item $Z$ and $V$ are independent
+\end{itemize}
+
+\subsection{F-distribution} \label{app:F_distribution}
+
+A random variate of the F-distribution with parameters $d_1$ and $d_2$ arises as the ratio of two appropriately scaled chi-squared variates:
+
+\begin{equation}
+    X = \frac{U_1 / d_1}{U_2 / d_2}
+\end{equation}
+
+where
+
+\begin{itemize}
+    \item $U_{1}$ and $U_{2}$ have chi-squared distributions with $d_{1}$ and $d_{2}$ degrees of freedom respectively, and
+    \item $U_{1}$ and $U_{2}$ are independent.
+\end{itemize}
+
+\section{projections}
+
+\subsection{sum of projections}
+
+Let $V$ be a vector space, $W_1 \subset V$ a subspace, $W_2 \subset V$ a subspace such that $W_1 \perp W_2$.
+
+Let $P_1$ be an orthogonal projection onto the subspace $W_1$, $P_2$ be an orthogonal projection onto the subspace $W_2$. I claim that $P_1 + P_2$ is an orthogonal projection onto $W_1 + W_2$.
+
+\begin{proof}
+
+Denote $W_{\perp}$ the orthogonal complement of $W_1+W_2$.
+
+\begin{equation}
+    (W_1 + W_2) + W_{\perp} = V
+\end{equation}
+
+and
+
+\begin{equation}
+    (W_1 + W_2) \perp W_{\perp}
+\end{equation}
+
+Any vector $v \in V$ can be decomposed as
+
+\begin{equation}
+    v = w_{\perp} + w_1 + w_2
+\end{equation}
+
+where $w_{\perp} \in W_{\perp}$, $w_1 \in W_1$, $w_2 \in W_2$. This decomposition is unique.
+
+\begin{equation}
+    P_1 v = 0 + w_1 + 0 = w_1
+\end{equation}
+
+\begin{equation}
+    P_2 v = 0 + 0 + w_2 = w_2
+\end{equation}
+
+From these
+
+\begin{equation}
+    (P_1 + P_2) v = w_1 + w_2
+\end{equation}
+
+So $P_1 + P_2$ projects onto $W_1 + W_2$.
+
+\end{proof}
+
+
+\subsection{difference of projections} \label{app:diff_proj}
+
+Let $V$ be a vector space, $W_1 \subset V$ a subspace, $W_2 \subset W_1$ a subspace, $W_3 \subset W_1$ a subspace, such that $W_2 \perp W_3$, and $W_2 + W_3 = W_1$.
+
+Let $P_1$ be an orthogonal projection onto the subspace $W_1$, $P_2$ be an orthogonal projection onto the subspace $W_2$. I claim that $P_1 - P_2$ is an orthogonal projection onto $W_3$.
+
+\begin{proof}
+Denote $W_{\perp}$ the orthogonal complement of $W_1$: $W_1 + W_{\perp} = V$, and $W_1 \perp W_{\perp}$
+
+Any vector $v \in V$ can be decomposed as
+
+\begin{equation}
+    v = w_{\perp} + w_2 + w_3
+\end{equation}
+
+where $w_{\perp} \in W_{\perp}$, $w_2 \in W_2$, $w_3 \in W_3$. This decomposition is unique.
+
+\begin{equation}
+    P_1 v = 0 + w_2 + w_3 = w_2 + w_3
+\end{equation}
+
+\begin{equation}
+    P_2 v = 0 + w_2 + 0 = w_2
+\end{equation}
+
+From these
+
+\begin{equation}
+    (P_1 - P_2) v = (w_2 + w_3) - w_2 = w_3
+\end{equation}
+
+So $P_1 - P_2$ projects onto $W_3$.
+
+\end{proof}
+
+\subsection{The special vector $Xb$} \label{app:spec_Xb}
+
+(I couldn't find any better name for this subsection, sorry for this...) Let's begin with the $N\times p$ matrix $X$, where we denote the column vectors by $x_i$. Assume that $X$ has a full column-rank, so $\text{rank}(X)=p$. Denote the subspace $W = span(x_1, x_2, \dots, x_{p-1})$, which is the subspace generated by all the columns of $X$, except the last one. Let $b$ be the last column vector of $(X^TX)^{-1}$. I claim that $Xb$ is a vector that is perpendicular to $W$. Obviously, $Xb$ is in the column space of $X$. We have that
+
+\begin{equation}
+    X^TX(X^TX)^{-1} = I
+\end{equation}
+
+Considering the $i$th row, $j$th column ($q_j$ being the $j$th column vector of $(x^TX)^{-1}$, so $q_p = b$)
+
+\begin{equation}
+    x^T_i X q_j = \delta_{i,j}
+\end{equation}
+
+Choosing $j=p$
+
+\begin{equation}
+    x^T_i X b = \delta_{i,p}
+\end{equation}
+
+This means that $Xb$ is perpendicular to $x_i$ ($i \neq p$), which is what I wanted to prove. Now let's project onto the subspace $W_p = \text{span}(Xb)$:
+
+\begin{equation}
+    P_{p} = \frac{Xb\cdot b^TX^T}{b^TX^TXb} = \frac{Xb\cdot b^TX^T}{v}
+\end{equation}
+
+where $v \equiv b_p$ is the last element of the vector $b$, that is, $v\equiv [(X^TX)^{-1}]_{p,p}$.
+
+Now we can create the same projection according to Appendix \ref{app:diff_proj}. Let $P_X$ be the projection onto the column space of $X$, and $P_W$ the projection onto $W$:
+
+\begin{equation}
+    P_X = X (X^TX)^{-1} X^T
+\end{equation}
+
+\begin{equation}
+    P_W = X_0 (X^T_0 X_0)^{-1} X^T_0
+\end{equation}
+
+where we get $X_0$ from $X$ by dropping the last column. Now we see that
+
+\begin{equation}
+    X (X^TX)^{-1} X^T - X_0 (X^T_0 X_0)^{-1} X^T_0 = \frac{Xb\cdot b^TX^T}{v}
+\end{equation}
 
 \end{appendices}
 
