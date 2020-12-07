@@ -1031,6 +1031,85 @@ which concludes the proof.
 
 \subsubsection{Ex. 3.3}
 
+\paragraph{a.} We formulate an estimate of $a^T\beta$ as $c^Ty$. For the least squares estimate we have that
+
+\begin{equation}
+    a^T \hat{\beta} = a^T (X^TX)^{-1}X^T y
+\end{equation}
+
+From this,
+
+\begin{equation}
+    c_0 = X(X^TX)^{-1}a
+\end{equation}
+
+Any $c$ can be written as
+
+\begin{equation}
+    c = c_0 + c_1 = X(X^TX)^{-1}a + c_1
+\end{equation}
+
+The constraint is that $\text{E}(c^Ty) = a^T\beta$.
+
+\begin{equation}
+    \text{E}(c^Ty) = \text{E}(c^T_0 y) + \text{E}(c^T_1 y) = a^T \beta
+\end{equation}
+
+Since $\text{E}(c^T_0 y) = a^T \beta$, we have that $\text{E}(c^T_1 \beta) = 0$.
+
+\begin{equation}
+    0 = \text{E}(c^T_1 y) = c^T_1 X \beta
+\end{equation}
+
+Because $\beta$ is unobservable, we conclude that
+
+\begin{equation}
+    0 = c^T_1 X
+\end{equation}
+
+which means
+
+\begin{equation} \label{eq:ex3_3_a_constrain}
+    c^T_1 c_0 = c^T_1 X (X^TX)^{-1}a = 0
+\end{equation}
+
+Now consider the variances.
+
+\begin{equation}
+    \text{Var}(a^T \hat{\beta}) = a^T \text{Var}(\hat{\beta}) a = \sigma^2 a^T (X^TX)^{-1} a
+\end{equation}
+
+Calculating the variance of a general unbiased estimate, using (\ref{eq:ex3_3_a_constrain}):
+
+\begin{equation}
+\begin{split}
+    \text{Var}(c^T y) =& \sigma^2 c^T c\\
+    =& \sigma^2 (c^T_0 + c^T_1)(c_0 + c_1) = \sigma^2 (c^T_0 c_0 + 0 + 0 + c^T_1 c_1)\\
+    =& \sigma^2 c^T_0 c_0 + \sigma^2 c^T_1 c_1\\
+    =& \text{Var}(a^T \hat{\beta}) + \sigma^2 c^T_1 c_1
+\end{split}
+\end{equation}
+
+Since $\sigma^2 c^T_1 c_1 \ge 0$, we conclude that
+
+\begin{equation}
+    \text{Var}(c^Ty) \ge \text{Var}(a^T\hat{\beta})
+\end{equation}
+
+\paragraph{b.} The solution is basically the same as for the previous one. Here we will use the fact that $A^TA$ is a positive semidefinite matrix for any matrix $A$. A linear unbiased estimate for $\beta$ can be expressed as $\widetilde{\beta} = C^T y$, where $C$ is a $N \times (p+1)$ matrix. We can express $C$ as $C = X(X^TX)^{-1} + C_1 = C_0 + C_1$. The estimates are unbiased, so $\text{E}(C^Ty) = \beta$. From this we have
+
+\begin{equation}
+    \text{E}(C^Ty) = (C_0 + C_1)^T (X\beta) = \beta + C^T_1 X \beta = \beta \to C^T_1 X \beta = 0
+\end{equation}
+
+Because $\beta$ is unobservable, we have that
+
+\begin{equation} \label{eq:ex3_3_b_constrain}
+    C^T_1 X = 0
+\end{equation}
+
+Now consider the variances. $\hat{V} \equiv \text{Var}(\hat{\beta}) = \sigma^2 (X^TX)^{-1}$. $\tilde{V} \equiv \text{Var}(\tilde{\beta}) = \text{Var}(C^Ty) = \sigma^2 C^TC = \sigma^2 (C_0 + C_1)^T (C_0 + C_1)$. Using (\ref{eq:ex3_3_b_constrain}), we can write that $\tilde{V} = \sigma^2 C^T_0 C_0 + \sigma^2 C^T_1 C_1 = \hat{V} + \sigma^2 C^T_1 C_1$. From this: $\tilde{V} - \hat{V} = \sigma^2 C^T_1 C_1$ which is a positive semidefinite matrix. This concludes the proof.
+
 \newpage
 \begin{appendices}
 
