@@ -904,6 +904,62 @@ From these, we can calculate the difference of the residual sum of squares.
 
 So $\text{RSS}_0 - \text{RSS}_1$ is a chi-squared random variable with $p_1 - p_0$ degrees of freedom (the dimension of $W_2$). And $\text{RSS}_1$ is also chi-squared with $N-p_1-1$ degrees of freedom (the dimension of $W_1^{\perp}$). $\text{RSS}_0 - \text{RSS}_1$ and $\text{RSS}_1$ are independent, because $I-H_1$ and $H_1 - H_0$ project onto perpendicular subspaces.
 
+
+\subsection{Equation (3.28) on page 54}
+
+I'd like to confirm that in general,
+
+\begin{equation} \label{eq:beta_hat_j_to_confirm}
+    \hat{\beta}_j = \frac{z^T_jy}{z^T_j z_j}
+\end{equation}
+
+But first some notations and clarifications. $y, z_j \in \mathbb{R}^N$. $x_j \in \mathbb{R}^N$ is the $j$th column vector of $X$, the data matrix. $W_X$ is the column space of $X$, $W_{X(j)}$ is the subspace spanned by all the columns of $X$ except the $j$th column. $W^{\perp}_{X(j)}$ is a one-dimensional subspace that is orthogonal to $W_{X(j)}$, and
+
+\begin{equation}
+    W_{X(j)} + W^{\perp}_{X(j)} = W_X
+\end{equation}
+
+$z_j = x_j - P_j x_j$, where $P_j$ projects onto $W_{X(j)}$. We can also express it as
+
+\begin{equation}
+    z_j = P^{\perp}_j x_j
+\end{equation}
+
+where $P^{\perp}_j$ projects onto $W^{\perp}_{X(j)}$. We know, that
+
+\begin{equation}
+    \hat{\beta} = (X^TX)^{-1} X^T y
+\end{equation}
+
+Denoting the $j$th column vector of $(X^TX)^{-1}$ by $b_j$ ($(X^TX)^{-1}$ is symmetric, so $b^T_j$ is the $j$th row vector), we can write:
+
+\begin{equation} \label{eq:beta_hat_j_to_confirm_short}
+    \hat{\beta}_j = b^T_j X^T y
+\end{equation}
+
+From appendix (\ref{app:spec_Xb}) we can construct $P^{\perp}_j$:
+
+\begin{equation}
+    P^{\perp}_j = \frac{X b_j \cdot b^T_j X^T}{v_j}
+\end{equation}
+
+Where $v_j$ is the $j$th element of $b_j$ ($= [(X^TX)^{-1}]_{j,j}$). With this we can calculate $z_j$ ($A_{:,j}$ denotes the $j$th column vector of matrix $A$):
+
+\begin{equation}
+    \begin{split}
+        z_j =& P^{\perp}_j x_j = (P^{\perp}_j X)_{:,j} = \left(\frac{X b_j \cdot b^T_j X^T}{v_j} X\right)_{:,j}\\
+        =&  \left(\frac{X b_j}{v_j} b^T_j X^TX\right)_{:,j} = \left(\frac{X b_j}{v_j} \delta^T_j\right)_{:,j} = \frac{X b_j}{v_j}
+    \end{split}
+\end{equation}
+
+Here $\delta_j = I_{:,j}$, the $j$th column vector of the identity. We can plug this result into (\ref{eq:beta_hat_j_to_confirm}):
+
+\begin{equation}
+    \hat{\beta}_j = \frac{\frac{b^T_j X^T}{v_j} y}{\frac{b^T_j X^T X b_j}{v^2_j}} = \frac{b^T_j X^T y}{\frac{b^T_j \delta_j}{v_j}} = \frac{b^T_j X^T y}{\frac{v_j}{v_j}} = b^T_j X^T y
+\end{equation}
+
+It is indeed the same as we got in (\ref{eq:beta_hat_j_to_confirm_short}), so the proof is complete.
+
 \subsection{Solutions for the Exercises of chapter 3}
 
 \subsubsection{Ex. 3.1}
