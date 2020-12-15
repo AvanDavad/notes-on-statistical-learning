@@ -1110,24 +1110,181 @@ Because $\beta$ is unobservable, we have that
 
 Now consider the variances. $\hat{V} \equiv \text{Var}(\hat{\beta}) = \sigma^2 (X^TX)^{-1}$. $\tilde{V} \equiv \text{Var}(\tilde{\beta}) = \text{Var}(C^Ty) = \sigma^2 C^TC = \sigma^2 (C_0 + C_1)^T (C_0 + C_1)$. Using (\ref{eq:ex3_3_b_constrain}), we can write that $\tilde{V} = \sigma^2 C^T_0 C_0 + \sigma^2 C^T_1 C_1 = \hat{V} + \sigma^2 C^T_1 C_1$. From this: $\tilde{V} - \hat{V} = \sigma^2 C^T_1 C_1$ which is a positive semidefinite matrix. This concludes the proof.
 
+\subsubsection{Ex. 3.9 \emph{Forward stepwise regression}}
+
+For each column vector ($\mathbf{x}_2$) of $\mathbf{X}_2$, we do the following. Regress it on the column space of $\mathbf{Q}$ (denoted by $W_Q$). The projection matrix that projects onto $W_Q$ is $\mathbf{Q}\mathbf{Q}^T$. With this we have $\mathbf{x}'_2 = (\mathbf{I} - \mathbf{Q}\mathbf{Q}^T) \mathbf{x}_2$, which is orthogonal to $W_Q$. Appending $\mathbf{x}'_2$ to $\mathbf{Q}$ -- so that it is the last column vector -- we get $\mathbf{Q}'$. The columns of $\mathbf{Q}'$ are orthogonal, so the projection matrix that projects onto the column space of $\mathbf{Q}'$ is $\mathbf{Q}'\mathbf{Q}'^{T}$. Because $\mathbf{Q}' = [\mathbf{Q} | \mathbf{x}'_2]$, we can write that $\mathbf{Q}'\mathbf{Q}'^{T} = \mathbf{Q}\mathbf{Q}^{T} + \mathbf{x}'_2 \mathbf{x}'^T_2$. The new residual is $\mathbf{r}' = \mathbf{y} - \mathbf{Q}'\mathbf{Q}'^T\mathbf{y} = (\mathbf{I} - \mathbf{Q}'\mathbf{Q}'^T) \mathbf{y} = (\mathbf{I} - \mathbf{Q}\mathbf{Q}^T - \mathbf{x}'_2 \mathbf{x}'^T_2) \mathbf{y} = \mathbf{r} - \mathbf{x}'_2 \mathbf{x}'^T_2 \mathbf{y}$.
+
+Let me write this again:
+
+\[
+    \mathbf{r}' = \mathbf{r} - \mathbf{x}'_2 \mathbf{x}'^T_2 \mathbf{y}
+\]
+
+We are done, since we have an efficient way to calculate the residual. We seek for $\mathbf{x}'_2$ that minimizes $||\mathbf{r}'||^2$.
+
+\subsubsection{Ex. 3.11}
+
+\[
+\begin{split}
+\text{RSS}(\mathbf{B}) =& \sum_{i=1}^{N} (y_i -f(x_i))^T \mathbf{\Sigma}^{-1} (y_i - f(x_i))\\
+=& \text{Tr}\left( (\mathbf{Y} - \mathbf{X} \mathbf{B}) \mathbf{\Sigma}^{-1} (\mathbf{Y} - \mathbf{X} \mathbf{B})^T \right)\\
+=&\text{Tr}(\mathbf{Y} \mathbf{\Sigma}^{-1} \mathbf{Y}^T) - \text{Tr}(\mathbf{Y} \mathbf{\Sigma}^{-1} \mathbf{B}^T \mathbf{X}^T) - \text{Tr}(\mathbf{X}\mathbf{B}\mathbf{\Sigma}^{-1}\mathbf{Y}^T) + \text{Tr}(\mathbf{X} \mathbf{B} \mathbf{\Sigma}^{-1} \mathbf{B}^T \mathbf{X}^T)
+\end{split}
+\]
+
+Calculating the derivatives:
+
+\[
+\frac{d}{d\mathbf{B}}\text{Tr}(\mathbf{Y} \mathbf{\Sigma}^{-1} \mathbf{Y}^T) = \mathbf{0}
+\]
+
+\[
+\frac{d}{d\mathbf{B}}\text{Tr}(\mathbf{Y} \mathbf{\Sigma}^{-1} \mathbf{B}^T \mathbf{X}^T) = \frac{d}{d\mathbf{B}}\text{Tr}(\mathbf{X}^T \mathbf{Y} \mathbf{\Sigma}^{-1} \mathbf{B}^T) = \mathbf{X}^T \mathbf{Y} \mathbf{\Sigma}^{-1}
+\]
+
+\[
+\frac{d}{d\mathbf{B}}\text{Tr}(\mathbf{X}\mathbf{B}\mathbf{\Sigma}^{-1}\mathbf{Y}^T) = \frac{d}{d\mathbf{B}}\text{Tr}(\mathbf{\Sigma}^{-1}\mathbf{Y}^T\mathbf{X}\mathbf{B}) = (\mathbf{\Sigma}^{-1}\mathbf{Y}^T\mathbf{X})^T = \mathbf{X}^T \mathbf{Y} \mathbf{\Sigma}^{-1}
+\]
+
+\[
+\begin{split}
+\frac{d}{d\mathbf{B}}\text{Tr}(\mathbf{X} \mathbf{B} \mathbf{\Sigma}^{-1} \mathbf{B}^T \mathbf{X}^T) =& \frac{d}{d\mathbf{A}}\text{Tr}(\mathbf{X} \mathbf{A} \mathbf{\Sigma}^{-1} \mathbf{B}^T \mathbf{X}^T) + \frac{d}{d\mathbf{A}}\text{Tr}(\mathbf{X} \mathbf{B} \mathbf{\Sigma}^{-1} \mathbf{A}^T \mathbf{X}^T)\\
+=& (\mathbf{\Sigma}^{-1} \mathbf{B}^T \mathbf{X}^T \mathbf{X})^T + \mathbf{X}^T \mathbf{X} \mathbf{B} \mathbf{\Sigma}^{-1}\\
+=& 2\mathbf{X}^T \mathbf{X} \mathbf{B} \mathbf{\Sigma}^{-1}
+\end{split}
+\]
+
+Now we can substitute:
+
+\[
+\frac{d}{d\mathbf{B}} \text{RSS}(\mathbf{B}) = -2 \mathbf{X}^T \mathbf{Y} \mathbf{\Sigma}^{-1} + 2\mathbf{X}^T \mathbf{X} \mathbf{B} \mathbf{\Sigma}^{-1}
+\]
+
+Setting this to zero, we get:
+
+\[
+\mathbf{B} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^T\mathbf{Y}
+\]
+
+What happens if the covariance matrices $\mathbf{\Sigma_i}$ are different for each observation? The Residual Sum of Squares:
+
+\[
+\text{RSS}(\mathbf{B}) = \sum_{i=1}^{N} (y_i - \mathbf{B}^Tx_i)^T \mathbf{\Sigma}^{-1}_i (y_i - \mathbf{B}^Tx_i)
+\]
+
+Derivating this w.r.t $\mathbf{B}$, and setting to zero, we get:
+
+\[
+\sum_{i=1}^{N} x_i x^T_i \mathbf{B} \mathbf{\Sigma}^{-1}_i = \sum_{i=1}^{N} x_i y^T_i \mathbf{\Sigma}^{-1}_i
+\]
+
 \newpage
 \begin{appendices}
 
 Here I collected the useful mathematical knowledge required to understand some proofs.
 
-\section{differentiation w.r.t. a vector}
+\section{differentiation}
 
-Let $\mathbf{a} \in \mathbb{R}^n$ be a constant vector, $\mathbf{x} \in \mathbb{R}^n$. Then
+\subsection{differentiation w.r.t. a vector}
+
+\paragraph{1.} Let $\mathbf{a} \in \mathbb{R}^n$ be a constant vector, $\mathbf{x} \in \mathbb{R}^n$. Then
 
 \begin{equation} \label{eq:da_dx}
     \frac{d}{d\mathbf{x}} (\mathbf{x}^{T}\mathbf{a}) = \frac{d}{d\mathbf{x}} (\mathbf{a}^{T}\mathbf{x}) = \mathbf{a}
 \end{equation}
 
-Let $\mathbf{A} \in \mathbb{R}^{nxn}$ be a constant matrix, $\mathbf{x} \in \mathbb{R}^n$ Then
+\paragraph{2.} Let $\mathbf{A} \in \mathbb{R}^{nxn}$ be a constant matrix, $\mathbf{x} \in \mathbb{R}^n$ Then
 
 \begin{equation} \label{eq:dA_dx}
     \frac{d}{d\mathbf{x}} (\mathbf{x}^{T}\mathbf{A}\mathbf{x}) = (\mathbf{A} + \mathbf{A}^T) \mathbf{x}
 \end{equation}
+
+We can derive this as follows:
+
+\[
+\begin{split}
+    \frac{d}{d\mathbf{x}} (\mathbf{x}^{T}\mathbf{A}\mathbf{x}) =& \frac{d}{d\mathbf{y}} (\mathbf{y}^{T}\mathbf{A}\mathbf{x}) + \frac{d}{d\mathbf{y}} (\mathbf{x}^{T}\mathbf{A}\mathbf{y})\\
+    =& \frac{d}{d\mathbf{y}} (\mathbf{y}^{T}\mathbf{A}\mathbf{x}) + \frac{d}{d\mathbf{y}} (\mathbf{y}^T\mathbf{A}^{T}\mathbf{x})\\
+    =& \mathbf{A}\mathbf{x} + \mathbf{A}^T\mathbf{x}
+\end{split}
+\]
+
+
+\subsection{differentiation w.r.t. a matrix}
+
+\paragraph{1.} Let $\mathbf{A} \in \mathbb{R}^{n\times m}$, $\mathbf{X} \in \mathbb{R}^{m\times n}$. Then
+
+\begin{equation}
+    \frac{d}{d\mathbf{X}}\text{Tr}(\mathbf{AX}) = \frac{d}{d\mathbf{X}}\text{Tr}(\mathbf{XA}) = \mathbf{A}^T
+\end{equation}
+
+\paragraph{2.} Let $\mathbf{A} \in \mathbb{R}^{n\times m}$, $\mathbf{X} \in \mathbb{R}^{n\times m}$. Then
+
+\begin{equation}
+    \frac{d}{d\mathbf{X}}\text{Tr}(\mathbf{AX^T}) = \frac{d}{d\mathbf{X}}\text{Tr}(\mathbf{X^TA}) = \mathbf{A}
+\end{equation}
+
+
+\paragraph{3.} Let $\mathbf{A} \in \mathbb{R}^{m\times m}$, $\mathbf{X} \in \mathbb{R}^{m\times n}$. Then
+
+\begin{equation}
+    \frac{d}{d\mathbf{X}} \text{Tr}(\mathbf{X}^T \mathbf{A} \mathbf{X}) = (\mathbf{A} + \mathbf{A}^T) \mathbf{X}
+\end{equation}
+
+We can derive it as follows:
+
+\[
+\begin{split}
+    \frac{d}{d\mathbf{X}} \text{Tr}(\mathbf{X}^T \mathbf{A} \mathbf{X}) =& \frac{d}{d\mathbf{Y}} \text{Tr}(\mathbf{Y}^T \mathbf{A} \mathbf{X}) + \frac{d}{d\mathbf{Y}} \text{Tr}(\mathbf{X}^T \mathbf{A} \mathbf{Y})\\
+    =& \mathbf{A} \mathbf{X} + (\mathbf{X}^T \mathbf{A})^T\\
+    =& \mathbf{A} \mathbf{X} + \mathbf{A}^T \mathbf{X} = (\mathbf{A} + \mathbf{A}^T) \mathbf{X}
+\end{split}
+\]
+
+\paragraph{Example.} Consider now this example.
+
+\[
+f(\mathbf{X}) = \text{Tr}(\mathbf{X}^T \mathbf{A} \mathbf{X} \mathbf{B} \mathbf{X}^T \mathbf{C})
+\]
+
+where $\mathbf{X} \in \mathbb{R}^{n\times m}$, $\mathbf{A} \in \mathbb{R}^{n\times n}$, $\mathbf{B} \in \mathbb{R}^{m\times m}$, $\mathbf{C} \in \mathbb{R}^{n\times m}$.
+
+\[
+\begin{split}
+    \frac{d}{d\mathbf{X}} f(\mathbf{X}) =& \frac{d}{d\mathbf{Y}} \text{Tr}(\mathbf{Y}^T \mathbf{A} \mathbf{X} \mathbf{B} \mathbf{X}^T \mathbf{C})\\
+    +& \frac{d}{d\mathbf{Y}} \text{Tr}(\mathbf{X}^T \mathbf{A} \mathbf{Y} \mathbf{B} \mathbf{X}^T \mathbf{C})\\
+    +& \frac{d}{d\mathbf{Y}} \text{Tr}(\mathbf{X}^T \mathbf{A} \mathbf{X} \mathbf{B} \mathbf{Y}^T \mathbf{C})
+\end{split}
+\]
+
+Calculating these:
+
+\[
+\begin{split}
+    \frac{d}{d\mathbf{Y}} \text{Tr}(\mathbf{Y}^T \mathbf{A} \mathbf{X} \mathbf{B} \mathbf{X}^T \mathbf{C}) = \mathbf{A} \mathbf{X} \mathbf{B} \mathbf{X}^T \mathbf{C}
+\end{split}
+\]
+
+\[
+\begin{split}
+    \frac{d}{d\mathbf{Y}} \text{Tr}(\mathbf{X}^T \mathbf{A} \mathbf{Y} \mathbf{B} \mathbf{X}^T \mathbf{C}) =& \frac{d}{d\mathbf{Y}} \text{Tr}(\mathbf{Y} \mathbf{B} \mathbf{X}^T \mathbf{C} \mathbf{X}^T \mathbf{A})\\
+    =& (\mathbf{B} \mathbf{X}^T \mathbf{C} \mathbf{X}^T \mathbf{A})^T\\
+    =& \mathbf{A}^T \mathbf{X} \mathbf{C}^T \mathbf{X} \mathbf{B}^T
+\end{split}
+\]
+
+\[
+\begin{split}
+   \frac{d}{d\mathbf{Y}} \text{Tr}(\mathbf{X}^T \mathbf{A} \mathbf{X} \mathbf{B} \mathbf{Y}^T \mathbf{C}) = \frac{d}{d\mathbf{Y}} \text{Tr}(\mathbf{Y}^T \mathbf{C} \mathbf{X}^T \mathbf{A} \mathbf{X} \mathbf{B}) = \mathbf{C} \mathbf{X}^T \mathbf{A} \mathbf{X} \mathbf{B}
+\end{split}
+\]
+
+So the result is:
+
+\[
+\frac{d}{d\mathbf{X}} \text{Tr}(\mathbf{X}^T \mathbf{A} \mathbf{X} \mathbf{B} \mathbf{X}^T \mathbf{C}) = \mathbf{A} \mathbf{X} \mathbf{B} \mathbf{X}^T \mathbf{C} + \mathbf{A}^T \mathbf{X} \mathbf{C}^T \mathbf{X} \mathbf{B}^T + \mathbf{C} \mathbf{X}^T \mathbf{A} \mathbf{X} \mathbf{B}
+\]
+
 
 \section{variance and covariance properties}
 
