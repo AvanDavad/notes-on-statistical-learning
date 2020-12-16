@@ -1156,7 +1156,37 @@ The drop in RSS:
 \text{RSS} - \text{RSS}' = (2\mathbf{r} - \mathbf{y})^T\mathbf{q}\mathbf{q}^T\mathbf{y}
 \]
 
-So we iterate through the columns of $\mathbf{X}_2$ and seek for the largest drop in RSS. Once we have the best column ($\mathbf{u}^{*}$), we pass $\mathbf{H}_{1u*}$ to the next iteration.
+So we iterate through the columns of $\mathbf{X}_2$ and seek for the largest drop in RSS. Once we have the best column ($\mathbf{u}^{*}$), we pass $\mathbf{H}_{1u*}$ to the next iteration. Consider the notebook "forward\_stepwise.ipynb" where I have implemented this algorithm.
+
+\subsubsection{Ex. 3.10 Backward stepwise regression}
+
+Now we seek for a column vector $\mathbf{x}$ that we can drop from $\mathbf{X}$. Notations. $\mathbf{x}_i$ is the $i$th column vector of $\mathbf{X}$. $\mathbf{X}_i$ is the matrix obtained from $\mathbf{X}$ by dropping the $i$th column. $\mathbf{B} \equiv (\mathbf{X}^T\mathbf{X})^{-1}$. The $i$th column vector of $\mathbf{B}$ is $\mathbf{b}_i$.
+
+Now, $\mathbf{H} = \mathbf{X}\mathbf{B}\mathbf{X}^T$ projects onto the column space of $\mathbf{X}$. According to Appendix (\ref{app:spec_Xb}), $\mathbf{H}_i = \mathbf{H} - \mathbf{P}_i$ projects onto the column space of $\mathbf{X}_i$, where
+
+\[
+\mathbf{P}_i = \frac{\mathbf{X}\mathbf{b}_i \mathbf{b}^T_i \mathbf{X}^T}{v_i}
+\]
+
+and $v_i$ is the $i$th element in the diagonal of $\mathbf{B}$. The original residual:
+
+\[
+\mathbf{r} = (\mathbf{I} - \mathbf{H})\mathbf{y}
+\]
+
+The new residual (after dropping the $i$th column in $\mathbf{X}$:
+
+\[
+\mathbf{r}_i = (\mathbf{I} - \mathbf{H}_i)\mathbf{y} = \mathbf{r} + \mathbf{P}_i \mathbf{y}
+\]
+
+From this we get the increment in RSS introduced by dropping the feature:
+
+\[
+\Delta \text{RSS}_i = (2\mathbf{r} + \mathbf{y})^T \mathbf{P}_i \mathbf{y}
+\]
+
+We seek for a column vector of $\mathbf{X}$ for which $\Delta\text{RSS}_i$ is minimal. We drop that feature. Consider the notebook "backward\_stepwise.ipynb" where I implement this algorithm.
 
 \subsubsection{Ex. 3.11}
 
@@ -1496,7 +1526,7 @@ So $P_1 - P_2$ projects onto $W_3$.
     X^TX(X^TX)^{-1} = I
 \end{equation}
 
-Considering the $i$th row, $j$th column ($q_j$ being the $j$th column vector of $(x^TX)^{-1}$, so $q_p = b$)
+Considering the $i$th row, $j$th column ($q_j$ being the $j$th column vector of $(X^TX)^{-1}$, so $q_p = b$)
 
 \begin{equation}
     x^T_i X q_j = \delta_{i,j}
