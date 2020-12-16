@@ -1112,15 +1112,51 @@ Now consider the variances. $\hat{V} \equiv \text{Var}(\hat{\beta}) = \sigma^2 (
 
 \subsubsection{Ex. 3.9 \emph{Forward stepwise regression}}
 
-For each column vector ($\mathbf{x}_2$) of $\mathbf{X}_2$, we do the following. Regress it on the column space of $\mathbf{Q}$ (denoted by $W_Q$). The projection matrix that projects onto $W_Q$ is $\mathbf{Q}\mathbf{Q}^T$. With this we have $\mathbf{x}'_2 = (\mathbf{I} - \mathbf{Q}\mathbf{Q}^T) \mathbf{x}_2$, which is orthogonal to $W_Q$. Appending $\mathbf{x}'_2$ to $\mathbf{Q}$ -- so that it is the last column vector -- we get $\mathbf{Q}'$. The columns of $\mathbf{Q}'$ are orthogonal, so the projection matrix that projects onto the column space of $\mathbf{Q}'$ is $\mathbf{Q}'\mathbf{Q}'^{T}$. Because $\mathbf{Q}' = [\mathbf{Q} | \mathbf{x}'_2]$, we can write that $\mathbf{Q}'\mathbf{Q}'^{T} = \mathbf{Q}\mathbf{Q}^{T} + \mathbf{x}'_2 \mathbf{x}'^T_2$. The new residual is $\mathbf{r}' = \mathbf{y} - \mathbf{Q}'\mathbf{Q}'^T\mathbf{y} = (\mathbf{I} - \mathbf{Q}'\mathbf{Q}'^T) \mathbf{y} = (\mathbf{I} - \mathbf{Q}\mathbf{Q}^T - \mathbf{x}'_2 \mathbf{x}'^T_2) \mathbf{y} = \mathbf{r} - \mathbf{x}'_2 \mathbf{x}'^T_2 \mathbf{y}$.
+Actually we don't need $\mathbf{Q}$, we only need $\mathbf{H}= \mathbf{Q}\mathbf{Q}^T$, and updating this matrix. Some notations first. $W_1$ is the column space of $\mathbf{X}_1$. $\mathbf{u}$ is an arbitrary column vector of $\mathbf{X}_2$. $\mathbf{X}_{1u}$ is the matrix $[\mathbf{X_1} | \mathbf{u}]$. $W_{1u}$ is the column space of $\mathbf{X}_{1u}$. $\mathbf{H}_1$ is the projection matrix that projects onto $W_1$. $\mathbf{H}_{1u}$ projects onto $W_{1u}$.
 
-Let me write this again:
+We know the residual:
 
 \[
-    \mathbf{r}' = \mathbf{r} - \mathbf{x}'_2 \mathbf{x}'^T_2 \mathbf{y}
+\mathbf{r} = \mathbf{y} - \mathbf{\hat{y}} = \mathbf{y} - \mathbf{H}_1 \mathbf{y}
 \]
 
-We are done, since we have an efficient way to calculate the residual. We seek for $\mathbf{x}'_2$ that minimizes $||\mathbf{r}'||^2$.
+Now the new residual:
+
+\[
+\mathbf{r}'  = \mathbf{y} - \mathbf{\hat{y}}' = \mathbf{y} - \mathbf{H}_{1u}\mathbf{y}
+\]
+
+Let's calculate $\mathbf{H}_{1u}$ efficiently. It projects onto $W_{1u}$. We have an orthonormal base in $W_1$, namely, the columns of $\mathbf{Q}$. We need an orthonormal base in $W_{1u}$ as well. So lets regress $\mathbf{u}$ onto $W_1$. $\mathbf{u}_p = \mathbf{H}_1 \mathbf{u}$ is the projection of $\mathbf{u}$ onto $W_1$, so $\mathbf{u} - \mathbf{H}_1 \mathbf{u}$ is orthogonal to $W_1$. Let's normalize this vector and append it to $\mathbf{Q}$.
+
+\[
+    \mathbf{q} = \frac{\mathbf{u} - \mathbf{H}_1 \mathbf{u}}{|| \mathbf{u} - \mathbf{H}_1 \mathbf{u} ||}
+\]
+
+With this we can construct $\mathbf{Q}' = [\mathbf{Q} | \mathbf{q}]$, and the columns of this matrix are orthonormal. The projection matrix:
+
+\[
+\mathbf{H}_{1u} = \mathbf{Q}'\mathbf{Q}'^T = \mathbf{Q}\mathbf{Q}^T + \mathbf{q}\mathbf{q}^T = \mathbf{H}_1 + \mathbf{q}\mathbf{q}^T
+\]
+
+The new residual:
+
+\[
+\mathbf{r}' = \mathbf{y} - \mathbf{H}_{1u}\mathbf{y} = \mathbf{y} - \mathbf{H}_1 \mathbf{y} - \mathbf{q}\mathbf{q}^T\mathbf{y} = \mathbf{r} - \mathbf{q}\mathbf{q}^T\mathbf{y}
+\]
+
+From this:
+
+\[
+\text{RSS}' = \text{RSS} -2\mathbf{r}^T \mathbf{q}\mathbf{q}^T \mathbf{y} + \mathbf{y}^T\mathbf{q}\mathbf{q}^T\mathbf{y}
+\]
+
+The drop in RSS:
+
+\[
+\text{RSS} - \text{RSS}' = (2\mathbf{r} - \mathbf{y})^T\mathbf{q}\mathbf{q}^T\mathbf{y}
+\]
+
+So we iterate through the columns of $\mathbf{X}_2$ and seek for the largest drop in RSS. Once we have the best column ($\mathbf{u}^{*}$), we pass $\mathbf{H}_{1u*}$ to the next iteration.
 
 \subsubsection{Ex. 3.11}
 
