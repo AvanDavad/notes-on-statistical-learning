@@ -5,6 +5,7 @@
 \usepackage{amsthm} % for proofs
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage{bm}
 \usepackage[toc,page]{appendix}
 \graphicspath{ {./images} }
 
@@ -1109,6 +1110,76 @@ Because $\beta$ is unobservable, we have that
 \end{equation}
 
 Now consider the variances. $\hat{V} \equiv \text{Var}(\hat{\beta}) = \sigma^2 (X^TX)^{-1}$. $\tilde{V} \equiv \text{Var}(\tilde{\beta}) = \text{Var}(C^Ty) = \sigma^2 C^TC = \sigma^2 (C_0 + C_1)^T (C_0 + C_1)$. Using (\ref{eq:ex3_3_b_constrain}), we can write that $\tilde{V} = \sigma^2 C^T_0 C_0 + \sigma^2 C^T_1 C_1 = \hat{V} + \sigma^2 C^T_1 C_1$. From this: $\tilde{V} - \hat{V} = \sigma^2 C^T_1 C_1$ which is a positive semidefinite matrix. This concludes the proof.
+
+\subsubsection{Ex. 3.5}
+
+The ridge regression loss in vectorized form:
+
+\[
+L_{\text{ridge}} = (\mathbf{y} - \beta_0 \mathbf{e} - \mathbf{X}\bm{\beta})^T (\mathbf{y} - \beta_0 \mathbf{e} - \mathbf{X}\bm{\beta}) + \lambda \bm{\beta}^T\bm{\beta}
+\]
+
+$\mathbf{e}$ is a vector of all ones in $\mathbb{R}^N$. $\mathbf{X}$ is $N\times p$ matrix, so it doesn't have $\mathbf{e}$ as its first column. That's why we have a separate $\beta_0$, which is a scalar. All other coefficients are in the vector $\bm{\beta}$.
+
+How to formulate $L^c_{\text{ridge}}$? We can use $L_{\text{ridge}}$, but instead of $\mathbf{X}$, we write $\mathbf{X} - \frac{1}{N}\mathbf{e}\mathbf{e}^T\mathbf{X}$. It's because $\frac{1}{N}\mathbf{e}^T\mathbf{X} = [\overline{x}_1, \overline{x}_2, \dots, \overline{x}_p]$. Let's create the following notation:
+
+\[
+    \mathbf{A} \equiv \frac{\mathbf{e}\mathbf{e}^T}{\mathbf{e}^T\mathbf{e}} = \frac{\mathbf{e}\mathbf{e}^T}{N}
+\]
+
+This is a projection onto the line defined by $\mathbf{e}$. So to get $L^c_{\text{ridge}}$, we replace $\mathbf{X}$ in $L_{\text{ridge}}$ with $(\mathbf{I} - \mathbf{A})\mathbf{X}$. So we only need to solve $L_{\text{ridge}}$ for $\beta_0$ and $\bm{\beta}$. Once we have these, we get $\beta^c_0$, $\bm{\beta}^c$ by applying the change $\mathbf{X} \to (\mathbf{I} - \mathbf{A})\mathbf{X}$.
+
+\[
+\begin{split}
+\frac{\partial L_{\text{ridge}}}{\partial \beta_0} =& -2\mathbf{e}^T(\mathbf{y} - \beta_0 \mathbf{e} - \mathbf{X}\bm{\beta}) = 0\\
+\to & \beta_0 = \overline{y} - \frac{1}{N}\mathbf{e}^T \mathbf{X} \bm{\beta}
+\end{split}
+\]
+
+Note that $\mathbf{e}^T\mathbf{e} = N$, and $\mathbf{e}^T \mathbf{y} = N \overline{y}$. Now we can get $\beta^c_0$ by the above mentioned substitution. Note that $\mathbf{e}^T\mathbf{A} = \frac1N \mathbf{e}^T\mathbf{e}\mathbf{e}^T = \frac1N N\mathbf{e}^T = \mathbf{e}^T$.
+
+\[
+\begin{split}
+\beta^c_0 =& \overline{y} - \frac1N \mathbf{e}^T (\mathbf{I} - \mathbf{A})\mathbf{X}\bm{\beta^c}\\
+=& \overline{y} - \frac1N (\mathbf{e}^T\mathbf{I} - \mathbf{e}^T\mathbf{A})\mathbf{X}\bm{\beta^c}\\
+=& \overline{y} - \frac1N (\mathbf{e}^T - \mathbf{e}^T)\mathbf{X}\bm{\beta^c}\\
+=& \overline{y}
+\end{split}
+\]
+
+So we see that $\beta^c_0$ does not depend on the features and coefficients, as $\beta_0$ does. Now let's move on to $\bm{\beta}$ and $\bm{\beta}^c$.
+
+\[
+\frac{\partial L_{\text{ridge}}}{\partial \bm{\beta}} = -2\mathbf{X}^T (\mathbf{y} - \beta_0 \mathbf{e} - \mathbf{X}\bm{\beta}) + 2\lambda \bm{\beta}
+\]
+
+Note that
+
+\[
+\beta_0 \mathbf{e} = \mathbf{e} \overline{y} - \frac1N \mathbf{e} \mathbf{e}^T \mathbf{X} \bm{\beta} = \mathbf{A}\mathbf{y} - \mathbf{A}\mathbf{X}\bm{\beta}
+\]
+
+So we have that
+
+\[
+\begin{split}
+\frac{\partial L_{\text{ridge}}}{\partial \bm{\beta}} =& -2\mathbf{X}^T (\mathbf{y} - \mathbf{A}\mathbf{y} + \mathbf{A}\mathbf{X}\bm{\beta} - \mathbf{X}\bm{\beta}) + 2\lambda \bm{\beta} = 0\\
+\to& \bm{\beta} = (\mathbf{X}^T(\mathbf{I} - \mathbf{A})\mathbf{X} + \lambda \mathbf{I})^{-1} \mathbf{X}^T (\mathbf{I} - \mathbf{A})\mathbf{y}
+\end{split}
+\]
+
+From this we can get $\bm{\beta}^c$ (by the substitution $\mathbf{X} \to (\mathbf{I} - \mathbf{A})\mathbf{X}$). Note that $\mathbf{I} - \mathbf{A}$ is a projection, so its square is itself, as well as its transpose.
+
+\[
+\begin{split}
+\bm{\beta}^c =& (((\mathbf{I} - \mathbf{A})\mathbf{X})^T(\mathbf{I} - \mathbf{A})(\mathbf{I} - \mathbf{A})\mathbf{X} + \lambda \mathbf{I})^{-1} ((\mathbf{I} - \mathbf{A})\mathbf{X})^T (\mathbf{I} - \mathbf{A})\mathbf{y}\\
+=& (\mathbf{X}^T(\mathbf{I} - \mathbf{A})(\mathbf{I} - \mathbf{A})(\mathbf{I} - \mathbf{A})\mathbf{X} + \lambda \mathbf{I})^{-1} \mathbf{X}^T (\mathbf{I} - \mathbf{A})(\mathbf{I} - \mathbf{A})\mathbf{y}\\
+=& (\mathbf{X}^T(\mathbf{I} - \mathbf{A})\mathbf{X} + \lambda \mathbf{I})^{-1} \mathbf{X}^T (\mathbf{I} - \mathbf{A})\mathbf{y}\\
+=& \bm{\beta}
+\end{split}
+\]
+
+So the conclusion is that by centering the inputs, we get the same result for $\bm{\beta}$ and $\bm{\beta}^c$, while $\beta_0$ gets replaces by $\beta^c_0 = \overline{y}$.
 
 \subsubsection{Ex. 3.9 \emph{Forward stepwise regression}}
 
