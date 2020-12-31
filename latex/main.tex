@@ -1181,6 +1181,103 @@ From this we can get $\bm{\beta}^c$ (by the substitution $\mathbf{X} \to (\mathb
 
 So the conclusion is that by centering the inputs, we get the same result for $\bm{\beta}$ and $\bm{\beta}^c$, while $\beta_0$ gets replaces by $\beta^c_0 = \overline{y}$.
 
+\subsubsection{Ex. 3.6}
+
+\begin{itemize}
+    \item $\bm{Y} = \bm{X}\bm{\beta} + \bm{\epsilon}$
+    \item $\bm{\beta} \sim N(\bm{0}, \tau^2 \bm{I}_p)$
+    \item $\bm{\epsilon} \sim N(\bm{0}, \sigma^2 \bm{I}_N)$
+\end{itemize}
+
+\paragraph{Solution 1.} Using Appendix (\ref{app:Gaussian_posterior}), $U=\bm{X}\beta$, $V=\bm{\epsilon}$, $W=U+V=\bm{Y}$. $\bm{X}\beta \sim N(\bm{0}, \tau^2 \bm{X}\bm{X}^T)$. With the notations in Appendix (\ref{app:Gaussian_posterior}), $\bm{\mu}_U=\bm{0}$, $\bm{\mu}_V = \bm{0}$, $\bm{\Sigma}_U = \tau^2 \bm{X}\bm{X}^T$, $\bm{\Sigma}_V = \sigma^2 \bm{I}_N$. $U|W$ is normally distributed with mean (and mode)
+
+\[
+\bm{\mu}_{U|W} = \tau^2 \bm{X}\bm{X}^T (\tau^2\bm{X}\bm{X}^T + \sigma^2 \bm{I}_N)^{-1}\bm{y}
+\]
+
+Using the matrix inversion lemma described in Appendix (\ref{app:matrix_inv_lemma}), we can write that
+
+\[
+\begin{split}
+(\tau^2\bm{X}\bm{X}^T + \sigma^2 \bm{I}_N)^{-1} = \frac{1}{\sigma^2}\left(\frac{\tau^2}{\sigma^2}\bm{X}\bm{X}^T + \bm{I}_N\right)^{-1}\\ =\frac{1}{\sigma^2}\left( \bm{I}_N - \frac{\tau}{\sigma} \bm{X}\left(\bm{I}_p + \frac{\tau^2}{\sigma^2}\bm{X}^T\bm{X}\right)^{-1}\frac{\tau}{\sigma}\bm{X}^T \right)\\
+=\frac{1}{\sigma^2} \bm{I}_N - \frac{1}{\sigma^2} \bm{X}\left(\frac{\sigma^2}{\tau^2}\bm{I}_p + \bm{X}^T\bm{X}\right)^{-1}\bm{X}^T
+\end{split}
+\]
+
+\[
+\bm{\mu}_{U|W}=\frac{\tau^2}{\sigma^2} \bm{X}\bm{X}^T\bm{y} - \frac{\tau^2}{\sigma^2}\bm{X}\bm{X}^T \bm{X}\left(\frac{\sigma^2}{\tau^2}\bm{I}_p + \bm{X}^T\bm{X}\right)^{-1}\bm{X}^T\bm{y}
+\]
+
+Now with this we can express $\bm{\mu}_{\beta|y}$:
+
+\[
+\begin{split}
+\bm{\mu}_{\beta|y} =& (\bm{X}^T\bm{X})^{-1}\bm{X}^T \bm{\mu}_{U|W}\\
+=& \frac{\tau^2}{\sigma^2} \bm{X}^T\bm{y} - \frac{\tau^2}{\sigma^2}\bm{X}^T \bm{X}\left(\frac{\sigma^2}{\tau^2}\bm{I}_p + \bm{X}^T\bm{X}\right)^{-1}\bm{X}^T\bm{y}\\
+=& \left[\frac{\tau^2}{\sigma^2} \left(\frac{\sigma^2}{\tau^2}\bm{I}_p + \bm{X}^T\bm{X}\right) - \frac{\tau^2}{\sigma^2}\bm{X}^T \bm{X}\right]\left(\frac{\sigma^2}{\tau^2}\bm{I}_p + \bm{X}^T\bm{X}\right)^{-1}\bm{X}^T\bm{y}\\
+=& \left(\frac{\sigma^2}{\tau^2}\bm{I}_p + \bm{X}^T\bm{X}\right)^{-1}\bm{X}^T\bm{y}
+\end{split}
+\]
+
+So this is the mean (and mode, as it is normally distributed) of $\beta$, given $\mathbf{y}$. We got the same expression as the one for ridge regression, when we have
+
+\[
+\lambda = \frac{\sigma^2}{\tau^2}
+\]
+
+\paragraph{Solution 2.} In Appendix (\ref{app:Gaussian_posterior}), we assume both $U$ and $V$ have a non-singular covariance matrix. But in our case it is not the case, since $\bm{X}\bm{X}^T$ is not invertible. But we can directly apply the Bayes-formula:
+
+\[
+f_{\beta|y}(\bm{\beta}|\bm{y}) = \frac{f_{y|\beta}(\bm{y}|\bm{\beta}) f_{\beta}(\bm{\beta})}{f_{y}(\bm{y})}
+\]
+
+From this (again, after a lot of computation) we get that $\beta|y$ is normally distributed and get that the mean is the one we got in solution 1.
+
+\subsubsection{Ex. 3.8}
+
+I assume that $\bm{X}$ has full rank, i.e., $\text{rank}(\bm{X}) = p+1$. We can write that $\bm{X} = [\bm{e} | \bm{X}_2]$, where $\bm{e}$ is the vector with all ones, and $\bm{X}_2$ is $N\times p$ matrix. Denote the column space of $\bm{X}$ by $W$, the subspace spanned by $\bm{e}$ is $W_e$, and so
+
+\[
+W = W_e + W_e^{\perp}
+\]
+
+By centering $\bm{X}_2$, we remove the projections of its columns onto $\bm{e}$, and so those columns will span $W_e^{\perp}$. the projection onto the line spanned by $\bm{e}$ is
+
+\[
+\bm{P}_e = \frac1N \bm{e}\bm{e}^T
+\]
+
+With this we have that
+
+\[
+\tilde{\bm{X}} = (\bm{I} - \bm{P}_e) \bm{X}_2
+\]
+
+because this way the columns of $\tilde{\bm{X}}$ are centered. The column space of $\tilde{\bm{X}}$ is $W_e^{\perp}$.
+
+Considering the QR decomposition of $\bm{X}$, we can write:
+
+\[
+\bm{Q} = [\bm{e}/\sqrt{N} | \bm{Q}_2] = \frac{1}{\sqrt{N}} [\bm{e} | \sqrt{N} \bm{Q}_2]
+\]
+
+The SVD of $\tilde{\bm{X}}$:
+
+\[
+\tilde{\bm{X}} = \bm{U} \bm{D} \bm{V}^{T}
+\]
+
+Denote the column space of (arbitrary) $\bm{A}$ by $R(\bm{A})$. Then
+
+\[
+R(\tilde{\bm{X}}) = R(\bm{U}) = W_e^{\perp}
+\]
+
+\[
+R(\bm{Q}_2) = W_e^{\perp}
+\]
+
+
 \subsubsection{Ex. 3.9 \emph{Forward stepwise regression}}
 
 Actually we don't need $\mathbf{Q}$, we only need $\mathbf{H}= \mathbf{Q}\mathbf{Q}^T$, and updating this matrix. Some notations first. $W_1$ is the column space of $\mathbf{X}_1$. $\mathbf{u}$ is an arbitrary column vector of $\mathbf{X}_2$. $\mathbf{X}_{1u}$ is the matrix $[\mathbf{X_1} | \mathbf{u}]$. $W_{1u}$ is the column space of $\mathbf{X}_{1u}$. $\mathbf{H}_1$ is the projection matrix that projects onto $W_1$. $\mathbf{H}_{1u}$ projects onto $W_{1u}$.
@@ -1505,6 +1602,56 @@ where
     \item $U_{1}$ and $U_{2}$ are independent.
 \end{itemize}
 
+\subsection{Gaussian posterior distribution} \label{app:Gaussian_posterior}
+
+\begin{itemize}
+    \item $U \sim N(\bm{\mu}_U \in \mathbb{R}^n, \bm{\Sigma}_U \in \mathbb{R}^{n\times n})$
+    \item $V \sim N(\bm{\mu}_V \in \mathbb{R}^n, \bm{\Sigma}_V \in \mathbb{R}^{n\times n})$
+    \item $U$ and $V$ are independent
+\end{itemize}
+
+$W = U + V$ is also normal, as well as $W|U$:
+
+\begin{itemize}
+    \item $W = U + V \sim N(\bm{\mu}_U + \bm{\mu}_V, \bm{\Sigma}_U + \bm{\Sigma}_V)$
+    \item $W|U \sim N(U + \bm{\mu}_V, \bm{\Sigma}_V)$
+\end{itemize}
+
+The posterior distribution $U|W$ is Gaussian, this is what I want to prove here.
+
+\begin{itemize}
+    \item $U|W \sim N(\bm{\mu}_{U|W}, \bm{\Sigma}_{U|W})$
+    \item $\bm{\mu}_{U|W} = \bm{\Sigma}_U (\bm{\Sigma}_U + \bm{\Sigma}_V)^{-1} (W - \bm{\mu}_V) + \bm{\Sigma}_V (\bm{\Sigma}_U + \bm{\Sigma}_V)^{-1}\bm{\mu}_U$
+    \item $\bm{\Sigma}_{U|W} = \bm{\Sigma}_U (\bm{\Sigma}_U + \bm{\Sigma}_V)^{-1} \bm{\Sigma}_V = \bm{\Sigma}_V (\bm{\Sigma}_U + \bm{\Sigma}_V)^{-1} \bm{\Sigma}_U$
+\end{itemize}
+
+The proof is too long, I won't specify all the details here. First, assuming that both $U$ and $V$ have a pdf,
+
+\[
+f_{U|W}(u|w) = \frac{f_{W|U}(w|u) f_{U}(u)}{f_{W}(w)}
+\]
+
+where
+
+\[
+f_{W|U}(w|u) = \frac{\text{exp}\left(-\frac12 (w-u-\mu_V)^T \bm{\Sigma}_V^{-1} (w-u-\mu_V) \right)}{\sqrt{(2\pi)^n \text{det}(\bm{\Sigma}_V)}}
+\]
+
+\[
+f_{U}(u) = \frac{\text{exp}\left( -\frac12 (u-\mu_U)^T \bm{\Sigma}^{-1}_U (u-\mu_U) \right)}{\sqrt{(2\pi)^n \text{det}(\bm{\Sigma}_U)}}
+\]
+
+\[
+f_{W}(w) = \frac{\text{exp}\left( -\frac12 (w-\mu_U-\mu_V)^T (\bm{\Sigma}_U + \bm{\Sigma}_V)^{-1} (w-\mu_U-\mu_V) \right)}{\sqrt{(2\pi)^n \text{det}(\bm{\Sigma}_U + \bm{\Sigma}_V)}}
+\]
+
+Plugging these into the equation above, after a lot of computation, we get to
+
+\[
+f_{U|W}(u|w) = \frac{\text{exp}\left( -\frac12 (u-\mu_{U|W})^T \bm{\Sigma}_{U|W}^{-1} (u-\mu_{U|W}) \right)}{\sqrt{(2\pi)^n \text{det}(\bm{\Sigma}_{U|W})}}
+\]
+
+
 \section{projections}
 
 \subsection{sum of projections}
@@ -1632,6 +1779,58 @@ where we get $X_0$ from $X$ by dropping the last column. Now we see that
 \begin{equation}
     X (X^TX)^{-1} X^T - X_0 (X^T_0 X_0)^{-1} X^T_0 = \frac{Xb\cdot b^TX^T}{v}
 \end{equation}
+
+\section{Matrices}
+
+\subsection{The matrix inversion lemma}\label{app:matrix_inv_lemma}
+
+A special form of the matrix inversion lemma:
+
+\[
+(\bm{I}_n + \bm{U}\bm{V})^{-1} = \bm{I}_n - \bm{U}(\bm{I}_m + \bm{V}\bm{U})^{-1}\bm{V}
+\]
+
+where $\bm{U} \in \mathbb{R}^{n\times m}$, $\bm{V} \in \mathbb{R}^{m\times n}$.
+
+Proof.
+
+\[
+(\bm{I}_n + \bm{U}\bm{V})^{-1} = \bm{I}_n - (\bm{I}_n + \bm{U}\bm{V})^{-1}\bm{U}\bm{V} = \bm{I}_n - \bm{U}(\bm{I}_m + \bm{V}\bm{U})^{-1}\bm{V}
+\]
+
+At first we used the following:
+
+\[
+(\bm{I} + \bm{P})^{-1} = \bm{I} - (\bm{I} + \bm{P})^{-1} \bm{P}
+\]
+
+which comes from:
+
+\[
+\begin{split}
+(\bm{I} + \bm{P})^{-1}(\bm{I} + \bm{P}) =& \bm{I}\\
+(\bm{I} + \bm{P})^{-1} + (\bm{I} + \bm{P})^{-1} \bm{P} =& \bm{I}\\
+(\bm{I} + \bm{P})^{-1} =& \bm{I} - (\bm{I} + \bm{P})^{-1} \bm{P}
+\end{split}
+\]
+
+Secondly, we used:
+
+\[
+(\bm{I}_n+\bm{U}\bm{V})^{-1}\bm{U} = \bm{U}(\bm{I}_m+\bm{V}\bm{U})^{-1}
+\]
+
+which comes from:
+
+\[
+\begin{split}
+    \bm{U}(\bm{I}_m + \bm{V}\bm{U}) = (\bm{I}_n + \bm{U}\bm{V})\bm{U}\\
+    (\bm{I}_n + \bm{U}\bm{V})^{-1}\bm{U}(\bm{I}_m+\bm{V}\bm{U}) = \bm{U}\\
+    (\bm{I}_n+\bm{U}\bm{V})^{-1}\bm{U} = \bm{U}(\bm{I}_m+\bm{V}\bm{U})^{-1}
+\end{split}
+\]
+
+which concludes the proof.
 
 \end{appendices}
 
