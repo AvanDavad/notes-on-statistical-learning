@@ -1189,10 +1189,10 @@ So the conclusion is that by centering the inputs, we get the same result for $\
     \item $\bm{\epsilon} \sim N(\bm{0}, \sigma^2 \bm{I}_N)$
 \end{itemize}
 
-\paragraph{Solution 1.} Using Appendix (\ref{app:Gaussian_posterior}), $U=\bm{X}\beta$, $V=\bm{\epsilon}$, $W=U+V=\bm{Y}$. $\bm{X}\beta \sim N(\bm{0}, \tau^2 \bm{X}\bm{X}^T)$. With the notations in Appendix (\ref{app:Gaussian_posterior}), $\bm{\mu}_U=\bm{0}$, $\bm{\mu}_V = \bm{0}$, $\bm{\Sigma}_U = \tau^2 \bm{X}\bm{X}^T$, $\bm{\Sigma}_V = \sigma^2 \bm{I}_N$. $U|W$ is normally distributed with mean (and mode)
+Using Appendix (\ref{app:Gaussian_posterior2}), $U=\beta$, $V=\bm{\epsilon}$, $W=XU+V=\bm{Y}$, we have that the posterior distribution $\beta | Y$ is Gaussian, with mean:
 
 \[
-\bm{\mu}_{U|W} = \tau^2 \bm{X}\bm{X}^T (\tau^2\bm{X}\bm{X}^T + \sigma^2 \bm{I}_N)^{-1}\bm{y}
+\bm{\mu}_{\beta|y} = \tau^2 \bm{X}^T (\sigma^2 \bm{I}_N + \tau^2 \bm{X} \bm{X}^T)^{-1}\bm{y}
 \]
 
 Using the matrix inversion lemma described in Appendix (\ref{app:matrix_inv_lemma}), we can write that
@@ -1204,15 +1204,11 @@ Using the matrix inversion lemma described in Appendix (\ref{app:matrix_inv_lemm
 \end{split}
 \]
 
-\[
-\bm{\mu}_{U|W}=\frac{\tau^2}{\sigma^2} \bm{X}\bm{X}^T\bm{y} - \frac{\tau^2}{\sigma^2}\bm{X}\bm{X}^T \bm{X}\left(\frac{\sigma^2}{\tau^2}\bm{I}_p + \bm{X}^T\bm{X}\right)^{-1}\bm{X}^T\bm{y}
-\]
-
-Now with this we can express $\bm{\mu}_{\beta|y}$:
+So the mean is:
 
 \[
 \begin{split}
-\bm{\mu}_{\beta|y} =& (\bm{X}^T\bm{X})^{-1}\bm{X}^T \bm{\mu}_{U|W}\\
+\bm{\mu}_{\beta|y} =& \tau^2 \bm{X}^T (\sigma^2 \bm{I}_N + \tau^2 \bm{X} \bm{X}^T)^{-1}\bm{y}\\
 =& \frac{\tau^2}{\sigma^2} \bm{X}^T\bm{y} - \frac{\tau^2}{\sigma^2}\bm{X}^T \bm{X}\left(\frac{\sigma^2}{\tau^2}\bm{I}_p + \bm{X}^T\bm{X}\right)^{-1}\bm{X}^T\bm{y}\\
 =& \left[\frac{\tau^2}{\sigma^2} \left(\frac{\sigma^2}{\tau^2}\bm{I}_p + \bm{X}^T\bm{X}\right) - \frac{\tau^2}{\sigma^2}\bm{X}^T \bm{X}\right]\left(\frac{\sigma^2}{\tau^2}\bm{I}_p + \bm{X}^T\bm{X}\right)^{-1}\bm{X}^T\bm{y}\\
 =& \left(\frac{\sigma^2}{\tau^2}\bm{I}_p + \bm{X}^T\bm{X}\right)^{-1}\bm{X}^T\bm{y}
@@ -1225,13 +1221,6 @@ So this is the mean (and mode, as it is normally distributed) of $\beta$, given 
 \lambda = \frac{\sigma^2}{\tau^2}
 \]
 
-\paragraph{Solution 2.} In Appendix (\ref{app:Gaussian_posterior}), we assume both $U$ and $V$ have a non-singular covariance matrix. But in our case it is not the case, since $\bm{X}\bm{X}^T$ is not invertible. But we can directly apply the Bayes-formula:
-
-\[
-f_{\beta|y}(\bm{\beta}|\bm{y}) = \frac{f_{y|\beta}(\bm{y}|\bm{\beta}) f_{\beta}(\bm{\beta})}{f_{y}(\bm{y})}
-\]
-
-From this (again, after a lot of computation) we get that $\beta|y$ is normally distributed and get that the mean is the one we got in solution 1.
 
 \subsubsection{Ex. 3.8}
 
@@ -1411,6 +1400,36 @@ Derivating this w.r.t $\mathbf{B}$, and setting to zero, we get:
 \[
 \sum_{i=1}^{N} x_i x^T_i \mathbf{B} \mathbf{\Sigma}^{-1}_i = \sum_{i=1}^{N} x_i y^T_i \mathbf{\Sigma}^{-1}_i
 \]
+
+\subsubsection{Ex. 3.13}
+
+Using the singular value decomposition of $X$,
+
+\[
+X = UDV^T
+\]
+
+the least squares coefficient is
+
+\[
+\begin{split}
+\hat{\beta}^{ls} =& (X^TX)^{-1}X^Ty\\
+=& (VDU^T UDV^T)^{-1}VDU^Ty\\
+=& VD^{-2}V^T VDU^Ty=VD^{-1}U^Ty
+\end{split}
+\]
+
+The PCR coefficient:
+
+\[
+\begin{split}
+    \hat{\beta}^{pcr}(p) =& \sum_{m=1}^p \hat{\Theta}_m v_m = \sum_{m=1}^p \frac{z^T_m y}{z^T_m z_m} v_m\\
+    =& \sum_{m=1}^p \frac{d_m u^T_m y}{d^2_m} v_m =\sum_{m=1}^p \frac{v_mu^T_m}{d_m} y = VD^{-1}U^T y
+\end{split}
+\]
+
+which concludes the proof.
+
 
 \newpage
 \begin{appendices}
@@ -1602,7 +1621,7 @@ where
     \item $U_{1}$ and $U_{2}$ are independent.
 \end{itemize}
 
-\subsection{Gaussian posterior distribution} \label{app:Gaussian_posterior}
+\subsection{Gaussian posterior distribution (W = U+V)} \label{app:Gaussian_posterior}
 
 \begin{itemize}
     \item $U \sim N(\bm{\mu}_U \in \mathbb{R}^n, \bm{\Sigma}_U \in \mathbb{R}^{n\times n})$
@@ -1650,6 +1669,34 @@ Plugging these into the equation above, after a lot of computation, we get to
 \[
 f_{U|W}(u|w) = \frac{\text{exp}\left( -\frac12 (u-\mu_{U|W})^T \bm{\Sigma}_{U|W}^{-1} (u-\mu_{U|W}) \right)}{\sqrt{(2\pi)^n \text{det}(\bm{\Sigma}_{U|W})}}
 \]
+
+
+
+\subsection{Gaussian posterior distribution (W = XU+V)} \label{app:Gaussian_posterior2}
+
+\begin{itemize}
+    \item $U \sim N(\bm{\mu}_U \in \mathbb{R}^m, \bm{\Sigma}_U \in \mathbb{R}^{m\times m})$
+    \item $V \sim N(\bm{\mu}_V \in \mathbb{R}^n, \bm{\Sigma}_V \in \mathbb{R}^{n\times n})$
+    \item $U$ and $V$ are independent
+    \item $X \in \mathbb{R}^{n\times m}$, non-random
+\end{itemize}
+
+$W = \bm{X}U + V$ is also normal, as well as $W|U$:
+
+\begin{itemize}
+    \item $W = \bm{X}U + V \sim N(\bm{X}\bm{\mu}_U + \bm{\mu}_V, \bm{X}\bm{\Sigma}_U\bm{X}^T + \bm{\Sigma}_V)$
+    \item $W|U \sim N(\bm{X}U + \bm{\mu}_V, \bm{\Sigma}_V)$
+\end{itemize}
+
+The posterior distribution $U|W$ is Gaussian, but I don't prove it here.
+
+\begin{itemize}
+    \item $U|W \sim N(\bm{\mu}_{U|W}, \bm{\Sigma}_{U|W})$
+    \item $\bm{\mu}_{U|W} = (\bm{I} - \bm{\Sigma}_U \bm{X}^T \bm{C}) \bm{\mu}_U + \bm{\Sigma}_U \bm{X}^T \bm{C}(W - \bm{\mu}_V)$
+    \item $\bm{\Sigma}_{U|W} =\bm{\Sigma}_U - \bm{\Sigma}_U \bm{X}^T \bm{C} \bm{X} \bm{\Sigma}_U$
+    \item $\bm{C} \equiv (\bm{\Sigma}_V + \bm{X} \bm{\Sigma}_U \bm{X}^T)^{-1}$
+\end{itemize}
+
 
 
 \section{projections}
